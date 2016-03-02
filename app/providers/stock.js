@@ -13,7 +13,7 @@ export class StockService {
   }
 
   fetchDay(codes){
-    let url='http://qt.gtimg.cn/q=',
+    let url='http://qt.gtimg.cn/q=';
     url=url+codes.join(',')+',';
     
   }
