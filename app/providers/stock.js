@@ -7,11 +7,16 @@ export class StockService {
     return [[Http]];
   }
 
-  constructor(http, user) {
+  constructor(http) {
     // inject the Http provider and set to this instance
     this.http = http;
   }
 
+  fetchDay(codes){
+    let url='http://qt.gtimg.cn/q=',
+    url=url+codes.join(',')+',';
+    
+  }
   load() {
     if (this.data) {
       // already loaded data
