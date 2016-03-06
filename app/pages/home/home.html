@@ -2,16 +2,19 @@
   <button menuToggle>
     <ion-icon name="menu"></ion-icon>
   </button>
-  <ion-title>自选股</ion-title>
-	<button>
+  <ion-title *ngIf="!searchBar">自选股</ion-title>
+	<ion-searchbar *ngIf="searchBar" (cancel)="onCancelSearch($event)"></ion-searchbar>
+	<ion-buttons end>
+	<button (click)="showSearchBar()">
     <ion-icon name="search"></ion-icon>
   </button>
+	</ion-buttons>
 </ion-navbar>
 
 <ion-content class="home">
   <ion-list>
     <ion-item *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
-      {{stock}}
+      <span>{{stock.code+''+stock.name}}</span><span>{{stock.close}}</span>
     </ion-item>
   </ion-list>
 </ion-content>

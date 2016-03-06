@@ -1,0 +1,17 @@
+<ion-toolbar>
+	<button (click)="close()">
+    <ion-icon name="menu"></ion-icon>
+  </button>
+  <ion-title>查找股票</ion-title>
+</ion-toolbar>
+<ion-searchbar placeholder="请输入股票代码、文字或拼音" [(ngModel)]="q" (input)="find($event)"
+	hideCancelButton={false} (cancel)="clear($event)"></ion-searchbar>
+<ion-content>
+	<ion-list>
+    <ion-item *ngFor="#item of results" (click)="gotoDetail(item)">
+			<ion-label>{{item.city+item.codeS}}</ion-label>
+			<ion-label>{{item.name}}</ion-label>
+      <button>add</button>
+    </ion-item>
+  </ion-list>
+</ion-content>

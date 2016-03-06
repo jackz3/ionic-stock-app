@@ -1,7 +1,8 @@
 import {App, IonicApp } from 'ionic-framework/ionic';
 import {LocalData} from './providers/local-data';
 import {StockService} from './providers/stock';
-import {HomePage} from './pages/home/home';
+import {Home} from './pages/home/home';
+import {About} from './pages/about/about';
 
 @App({
   templateUrl: 'build/app.html',
@@ -18,12 +19,12 @@ class Yunguba {
     this.stockService = stockService;
     
 		this.localData.load();
-		this.root = HomePage;
+		this.root = Home;
 		this.pages = [
-      { title: '自选股', component: HomePage, icon: 'calendar' },
-      { title: '涨幅榜', component: HomePage, index: 1, icon: 'contacts' },
-      { title: '跌幅榜', component: HomePage, index: 2, icon: 'map' },
-      { title: '关于', component: HomePage, index: 3, icon: 'information-circle' },
+      { title: '自选股', component: Home, icon: 'calendar',stocks:this.favors },
+      { title: '涨幅榜', component: Home, index: 1, icon: 'contacts' },
+      { title: '跌幅榜', component: Home, index: 2, icon: 'map' },
+      { title: '关于', component: About, index: 3, icon: 'information-circle' },
     ];
     //platform.ready().then(() => {
       // The platform is now ready. Note: if this callback fails to fire, follow
@@ -43,6 +44,7 @@ class Yunguba {
     //});
   }
 	gotoPage(page){
+		let nav = this.app.getComponent('nav');
 		if (page.index) {
       nav.setRoot(page.component, {tabIndex: page.index});
     } else {

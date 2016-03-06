@@ -1,0 +1,44 @@
+<ion-navbar *navbar>
+  <button menuToggle>
+    <ion-icon name="menu"></ion-icon>
+  </button>
+  <ion-title>{{stock.name&&(stock.code.slice(2)+' '+stock.name)}}</ion-title>
+	<ion-buttons end>
+	<button (click)="showSearchBar()">
+    <ion-icon name="search"></ion-icon>
+  </button>
+	</ion-buttons>
+</ion-navbar>
+
+<ion-content>
+	<ion-card>
+
+  <ion-item>
+    <ion-label>{{stock.close}}</ion-label>
+		<button primary clear item-right (click)="addRemove()">
+      <ion-icon *ngIf="isFavor" name="remove-circle"></ion-icon>
+			<ion-icon *ngIf="!isFavor" name="add-circle"></ion-icon>
+    </button>
+  </ion-item>
+	<ion-item>
+		<ion-label>开盘</ion-label>
+    <ion-label>{{stock.open}}</ion-label>
+		<ion-label>{{stock.high}}</ion-label>
+		<ion-label>{{stock.low}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <button primary clear item-left>
+      <ion-icon name="thumbs-up"></ion-icon>
+      <div>12 Likes</div>
+    </button>
+    <button primary clear item-left>
+      <ion-icon name="text"></ion-icon>
+      <div>4 Comments</div>
+    </button>
+    <ion-note item-right>
+      11h ago
+    </ion-note>
+  </ion-item>
+
+	</ion-card>
+</ion-content>
