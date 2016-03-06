@@ -16,8 +16,9 @@
   <ion-item>
     <ion-label>{{stock.close}}</ion-label>
 		<button primary clear item-right (click)="addRemove()">
-      <ion-icon *ngIf="isFavor" name="remove-circle"></ion-icon>
-			<ion-icon *ngIf="!isFavor" name="add-circle"></ion-icon>
+			<ion-icon [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
+      <!--<ion-icon *ngIf="isFavor" name="remove-circle"></ion-icon>
+			<ion-icon *ngIf="!isFavor" name="add-circle"></ion-icon>-->
     </button>
   </ion-item>
 	<ion-item>

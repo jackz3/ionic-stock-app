@@ -1,8 +1,11 @@
 import {Injectable} from 'angular2/core';
 import {Http} from 'angular2/http';
 
+export const CLOSE_INCREASE='CLOSE_INCREASE';
+export const CLOSE_DECLINE='CLOSE_DECLINE';
+
 function getScript(url){
-  	var promise = new Promise(function(resolve, reject){
+  let promise = new Promise(function(resolve, reject){
     var elem=document.createElement('script'),
         handler=function(e){
           elem.parentNode.removeChild(elem);
@@ -17,7 +20,7 @@ function getScript(url){
     elem.addEventListener('load',handler);
     elem.addEventListener('error',handler);
     document.head.appendChild(elem);
-  	});
+  });
   return promise;
 }
 
@@ -100,6 +103,36 @@ export class StockService {
       });
   }
 	
+	fetchRankings(sort){
+		let sr=sort===CLOSE_INCREASE?-1:1;
+		let url='http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/index.aspx?type=s&sortType=C&pageSize=100&page=1&jsName=quote_123&style=33&token=44c9d251add88e27b65ed86506f6e5da&sortRule='+sr;
+    return getScript(url).then(()=>{
+			if(window.quote_123){
+        let rankings=window.quote_123.rank,r=[];
+        window.quote_123=null;
+				rankings.forEach(stock=>{
+					let values=stock.split(','),
+							t=values[0].substring(6),
+              city=t==='1'?'sh':'sz',
+							code=city+values[1];
+          let v={
+            code,
+            name:values[2],
+            last:parseFloat(values[3]),
+            open:parseFloat(values[4]),
+            close:parseFloat(values[5]),
+            high:parseFloat(values[6]),
+            low:parseFloat(values[7]),
+            amount:parseInt(values[8]),
+            volume:parseInt(values[9]),
+          };
+					r.push(code);
+					this._data[code]=Object.assign(this._data[code]||{},v);
+				});
+				this._data[sort]={date:new Date(),data:r};
+			}
+		});
+	}
 	
   load() {
     if (this.data) {
@@ -193,45 +226,7 @@ export class StockService {
     });
   }
 
-  filterSession(session, queryWords, excludeTracks, segment) {
-
-    let matchesQueryText = false;
-    if (queryWords.length) {
-      // of any query word is in the session name than it passes the query test
-      queryWords.forEach(queryWord => {
-        if (session.name.toLowerCase().indexOf(queryWord) > -1) {
-          matchesQueryText = true;
-        }
-      });
-    } else {
-      // if there are no query words then this session passes the query test
-      matchesQueryText = true;
-    }
-
-    // if any of the sessions tracks are not in the
-    // exclude tracks then this session passes the track test
-    let matchesTracks = false;
-    session.tracks.forEach(trackName => {
-      if (excludeTracks.indexOf(trackName) === -1) {
-        matchesTracks = true;
-      }
-    });
-
-    // if the segement is 'favorites', but session is not a user favorite
-    // then this session does not pass the segment test
-    let matchesSegment = false;
-    if (segment === 'favorites') {
-      if (this.user.hasFavorite(session.name)) {
-        matchesSegment = true;
-      }
-    } else {
-      matchesSegment = true;
-    }
-
-    // all tests must be true if it should not be hidden
-    session.hide = !(matchesQueryText && matchesTracks && matchesSegment);
-  }
-
+  
   getSpeakers() {
     return this.load().then(data => {
       return data.speakers.sort((a, b) => {
@@ -239,18 +234,6 @@ export class StockService {
         let bName = b.name.split(' ').pop();
         return aName.localeCompare(bName);
       });
-    });
-  }
-
-  getTracks() {
-    return this.load().then(data => {
-      return data.tracks.sort();
-    });
-  }
-
-  getMap() {
-    return this.load().then(data => {
-      return data.map;
     });
   }
 

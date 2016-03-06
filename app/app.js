@@ -1,6 +1,6 @@
 import {App, IonicApp } from 'ionic-framework/ionic';
 import {LocalData} from './providers/local-data';
-import {StockService} from './providers/stock';
+import {StockService,CLOSE_INCREASE,CLOSE_DECLINE} from './providers/stock';
 import {Home} from './pages/home/home';
 import {About} from './pages/about/about';
 
@@ -21,9 +21,9 @@ class Yunguba {
 		this.localData.load();
 		this.root = Home;
 		this.pages = [
-      { title: '自选股', component: Home, icon: 'calendar',stocks:this.favors },
-      { title: '涨幅榜', component: Home, index: 1, icon: 'contacts' },
-      { title: '跌幅榜', component: Home, index: 2, icon: 'map' },
+      { title: '自选股', component: Home, icon: 'star',type:'favors'},
+      { title: '涨幅榜', component: Home, index: 1, icon: 'trending-up',type:CLOSE_INCREASE },
+      { title: '跌幅榜', component: Home, index: 2, icon: 'trending-down',type:CLOSE_DECLINE },
       { title: '关于', component: About, index: 3, icon: 'information-circle' },
     ];
     //platform.ready().then(() => {
@@ -46,7 +46,7 @@ class Yunguba {
 	gotoPage(page){
 		let nav = this.app.getComponent('nav');
 		if (page.index) {
-      nav.setRoot(page.component, {tabIndex: page.index});
+      nav.setRoot(page.component, {tabIndex: page.index,type:page.type});
     } else {
       nav.setRoot(page.component);
     }

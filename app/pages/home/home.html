@@ -13,8 +13,18 @@
 
 <ion-content class="home">
   <ion-list>
-    <ion-item *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
-      <span>{{stock.code+''+stock.name}}</span><span>{{stock.close}}</span>
+    <ion-item class="list-item" *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
+			<div>
+				<span class="list-code">{{stock.code.slice(2)}}</span><br>
+				<span class="list-name">{{stock.name}}</span>	
+			</div>
+			<div class="list-price" [class.red]="isIncrease(stock)" [class.green]="isDecline(stock)" item-right>
+				<span>{{stock.close}}</span>
+			</div>
+      <div class="list-percent" [class.red]="isIncrease(stock)" [class.green]="isDecline(stock)" item-right>
+				<span>{{getPercent(stock)}}</span><br>
+				<span>{{getDiff(stock)|PriceDiff}}</span>
+			</div>
     </ion-item>
   </ion-list>
 </ion-content>

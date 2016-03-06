@@ -1,3 +1,29 @@
-.home {
-  
+.list-item{
+	text-align: center;
+}
+.list-code{
+	font-size:0.9em;
+}
+.list-name{
+	font-size:1.1em;
+}
+.list-price{
+	width:30%;
+	font-size:1.2em;
+}
+.list-percent{
+	width:30%;
+}
+.list-percent span:first-child{
+	font-size: 1.2em;
+	line-height: 1.6em;
+}
+.list-percent span:last-child{
+	font-size:0.9em;
+}
+.red{
+	color:red;
+}
+.green{
+	color:green;
 }

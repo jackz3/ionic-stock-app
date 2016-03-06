@@ -1,4 +1,4 @@
-import {Page,NavParams,NavController,Alert} from 'ionic-framework/ionic';
+import {Page,NavParams,NavController,Alert,Modal} from 'ionic-framework/ionic';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
 import {Search} from '../search/search';
@@ -42,7 +42,8 @@ export class Detail {
 		});
   }
 	showSearchBar(){
-		
+		let modal = Modal.create(Search);
+    this.nav.present(modal)
 	}
   addRemove(){
 		let favors=this.localData.getFavors();
