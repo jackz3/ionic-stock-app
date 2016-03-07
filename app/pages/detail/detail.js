@@ -20,6 +20,11 @@ export class Detail {
 		this.updateFavorBtn();
 		this.setStock();
 		
+		if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
+			this.showBuySell=false;
+		}else{
+			this.showBuySell=true;
+		}
   }
 	updateFavorBtn(){
 		let favors=this.localData.getFavors();

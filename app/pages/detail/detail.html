@@ -42,4 +42,74 @@
   </ion-item>
 
 	</ion-card>
+	<div padding>
+  <ion-segment [(ngModel)]="chartType">
+    <ion-segment-button value="minutes">
+      分时
+    </ion-segment-button>
+    <ion-segment-button value="day">
+      日K
+    </ion-segment-button>
+		<ion-segment-button value="week">
+      周K
+    </ion-segment-button>
+		<ion-segment-button value="month">
+      月K
+    </ion-segment-button>
+  </ion-segment>
+	</div>
+	<div [ngSwitch]="chartType">
+		<div class="canvas-wrapper" *ngSwitchWhen="'minutes'">
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <span className="chartLabel"></span>
+      <canvas width="640" height="480" ref="canvas"></canvas>
+    </div>
+	</div>
+	<ion-card *ngIf="showBuySell">
+  	<ion-item>
+			<ion-label>买1</ion-label>
+    	<ion-label>{{stock.buy1}}</ion-label>
+			<ion-label>{{stock.buy1Vol}}</ion-label>
+			<ion-label>卖1</ion-label>
+			<ion-label>{{stock.sell1}}</ion-label>
+			<ion-label>{{stock.sell1Vol}}</ion-label>
+  	</ion-item>
+  	<ion-item>
+			<ion-label>买2</ion-label>
+    	<ion-label>{{stock.buy2}}</ion-label>
+			<ion-label>{{stock.buy2Vol}}</ion-label>
+			<ion-label>卖2</ion-label>
+			<ion-label>{{stock.sell2}}</ion-label>
+			<ion-label>{{stock.sell2Vol}}</ion-label>
+  	</ion-item>
+		<ion-item>
+			<ion-label>买3</ion-label>
+    	<ion-label>{{stock.buy3}}</ion-label>
+			<ion-label>{{stock.buy3Vol}}</ion-label>
+			<ion-label>卖3</ion-label>
+			<ion-label>{{stock.sell3}}</ion-label>
+			<ion-label>{{stock.sell3Vol}}</ion-label>
+  	</ion-item>
+		<ion-item>
+			<ion-label>买4</ion-label>
+    	<ion-label>{{stock.buy4}}</ion-label>
+			<ion-label>{{stock.buy4Vol}}</ion-label>
+			<ion-label>卖4</ion-label>
+			<ion-label>{{stock.sell4}}</ion-label>
+			<ion-label>{{stock.sell4Vol}}</ion-label>
+  	</ion-item>
+		<ion-item>
+			<ion-label>买5</ion-label>
+    	<ion-label>{{stock.buy5}}</ion-label>
+			<ion-label>{{stock.buy5Vol}}</ion-label>
+			<ion-label>卖5</ion-label>
+			<ion-label>{{stock.sell5}}</ion-label>
+			<ion-label>{{stock.sell5Vol}}</ion-label>
+  	</ion-item>
+	</ion-card>
 </ion-content>

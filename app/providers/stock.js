@@ -1,5 +1,6 @@
 import {Injectable} from 'angular2/core';
 import {Http} from 'angular2/http';
+import * as moment from 'moment'
 
 export const CLOSE_INCREASE='CLOSE_INCREASE';
 export const CLOSE_DECLINE='CLOSE_DECLINE';
@@ -34,7 +35,18 @@ export class StockService {
     this.http = http;
 		this._data={};
   }
-	
+	isOpening:function(){
+    let d=new Date(),day=d.getDay();
+    if(day>0 && day<6){
+      let start=moment({hour: 9, minute: 15}),
+          end=moment({hour:15,minutes:15}),
+          now = moment();
+      if(now>start && now<end){
+        return true;
+      }
+    }
+    return false;
+  }
 	getData(){
 		return this._data;
 	}
@@ -134,6 +146,90 @@ export class StockService {
 		});
 	}
 	
+	fetchMinutes(code){
+		let url='http://data.gtimg.cn/flashdata/hushen/minute/'+code+'.js';
+    return getScript(url).then(()=>{
+      let minData=window.min_data;
+      if(minData){
+        window.min_data=null;
+        let origin=minData.split('\n'),
+						line,mData=[],total=0,price,volume,totalV,totalVolume=0;
+        origin.shift();origin.shift();
+        origin.forEach(function(m,i){
+          line=m.split(' ');
+          if(line.length){
+            price=parseFloat(line[1]);
+            totalV=parseInt(line[2]);
+            volume=totalV-totalVolume;
+            totalVolume=totalV;
+            total+=price*volume;
+            mData.push({price:price,volume:volume,avg_price:total/totalVolume});
+          }
+        });
+        mData[0].totalVolume=totalVolume;
+        if(mData.length<242){
+          mData.push({price:-0.001,avg_price:-0.001});
+        }
+        this._data['m_'+code]=mData;
+      }
+    });
+	}
+	fetchKDays(code){
+		let url='http://data.gtimg.cn/flashdata/hushen/latest/daily/'+code+'.js?maxage=43201';
+    return getScript(url).then(()=>{
+			let val=window.latest_daily_data;
+      if(val){
+        window.latest_daily_data=null;
+        let origin=val.split('\n');
+        origin.shift();
+        let head=origin.shift();
+        if(head){
+          let t=head.split(' '),info={}; 
+          t.forEach((v)=>{
+            let key=v.split(':');
+            if(key[0]==='start'){
+              info.start=moment(key[1],'YYMMDD').toDate();
+            }else{
+              info[key[0]]=parseInt(key[1]);
+            }
+          });
+          if(info.num){
+            var kdata=[];
+            for(var i=0;i<info.num;i++){
+              t=origin[i].split(' ');
+              kdata[i]={
+                date:moment(t[0],'YYMMDD').toDate(),
+                open:parseFloat(t[1]),
+                close:parseFloat(t[2]),
+                high:parseFloat(t[3]),
+                low:parseFloat(t[4]),
+                volume:parseInt(t[5])
+              };
+            }
+            this._data['kd_'+code]=kdata;
+            this._data['ks_'+code]=info;
+            this.procKData(this._data['kd_'+code],0,info.num);
+          }
+        }
+      }
+    });
+	}
+	setMA(d,num,start,end){
+    var sum=0,prop='ma'+num;
+    for(var i=1;i<=num;i++){
+      sum+=d[start].close;
+      d[start++][prop]=sum/i;
+    }
+    for(i=start;i<end;i++){
+      sum+=d[i].close-d[i-num].close;
+      d[i][prop]=sum/num;
+    }
+  }
+	procKData(arr,start,count){
+    this.setMA(arr, 5, start, count);
+    this.setMA(arr, 10, start, count);
+    this.setMA(arr, 20, start, count);
+  }
   load() {
     if (this.data) {
       // already loaded data
