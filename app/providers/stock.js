@@ -35,7 +35,7 @@ export class StockService {
     this.http = http;
 		this._data={};
   }
-	isOpening:function(){
+	isOpening(){
     let d=new Date(),day=d.getDay();
     if(day>0 && day<6){
       let start=moment({hour: 9, minute: 15}),
