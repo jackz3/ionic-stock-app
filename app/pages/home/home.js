@@ -67,8 +67,8 @@ export class Home {
 		let modal = Modal.create(Search);
     this.nav.present(modal)
 	}
-	onCancelSearch(e){
-		this.searchBar=false;
+
+	OnDestroy(){
+	  console.log('destroy!');
 	}
-	
 }

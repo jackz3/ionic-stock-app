@@ -104,7 +104,7 @@ export class StockService {
               amount:parseInt(values[37]),
               turnoverRate:values[38]
             };
-            if(code==='sh000001' || code==='sz399001'){
+            if(code==='sh000001' || code.slice(0,5)==='sz399'){
               v.avg='';
             }else{
               v.avg=(v.amount/v.volume*100).toFixed(2);
