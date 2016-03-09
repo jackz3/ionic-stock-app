@@ -18,14 +18,28 @@ export class Home {
     this.stockService=stockService;
 		this.nav=nav;
 		this.type=navParams.get('type')||'favors';
+		this.timer=0;
 		
 		if(this.type==='favors'){
 			this.fetch();	
 		}else{
 			this.fetchRankings(this.type);
 		}
-    
+    console.log('constructor');
   }
+	onPageWillEnter(){
+		if(this.stockService.isOpening()){
+			
+		}else{
+			
+		}
+	}
+	onPageWillLeave(){
+	  if(this.timer){
+			clearTimeout(this.timer);
+		}
+	}
+	
 	isIncrease(stock){
 		return stock.close>stock.last;
 	}
@@ -68,7 +82,4 @@ export class Home {
     this.nav.present(modal)
 	}
 
-	OnDestroy(){
-	  console.log('destroy!');
-	}
 }
