@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/core';
 import {Http} from 'angular2/http';
-import * as moment from 'moment'
+import * as moment from 'moment';//'../../node_modules/moment/moment';
 
 export const CLOSE_INCREASE='CLOSE_INCREASE';
 export const CLOSE_DECLINE='CLOSE_DECLINE';
@@ -38,9 +38,9 @@ export class StockService {
 	isOpening(){
     let d=new Date(),day=d.getDay();
     if(day>0 && day<6){
-      let start=moment({hour: 9, minute: 15}),
-          end=moment({hour:15,minutes:15}),
-          now = moment();
+      let start=moment.default({hour: 9, minute: 15}),
+          end=moment.default({hour:15,minutes:15}),
+          now = moment.default();
       if(now>start && now<end){
         return true;
       }
@@ -84,6 +84,7 @@ export class StockService {
           if(window[varName]){
             var values=window[varName].split('~');
             window[varName]=null;
+						const date=new Date();
             var v={
               code:code,name:values[1],
               close:parseFloat(values[3]),
@@ -102,7 +103,8 @@ export class StockService {
               sell5:values[27],sell5Vol:values[28],
               time:values[30],high:values[33],low:values[34],
               amount:parseInt(values[37]),
-              turnoverRate:values[38]
+              turnoverRate:values[38],
+							date
             };
             if(code==='sh000001' || code.slice(0,5)==='sz399'){
               v.avg='';
@@ -332,5 +334,13 @@ export class StockService {
       });
     });
   }
-
+	getNullStock(code){
+		return {code,last:0}
+	}
+	getStocks(codes){
+		return codes.map(code=>{
+			let stock=this._data[code];
+			return stock?stock:this.getNullStock(code);
+		});
+	}
 }

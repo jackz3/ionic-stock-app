@@ -20,16 +20,16 @@ export class Home {
 		this.type=navParams.get('type')||'favors';
 		this.timer=0;
 		
-		if(this.type==='favors'){
-			this.fetch();	
-		}else{
-			this.fetchRankings(this.type);
-		}
-    console.log('constructor');
+		// if(this.type==='favors'){
+		// 	this.fetch();	
+		// }else{
+		// 	this.fetchRankings(this.type);
+		// }
+		this.setStocks();
   }
 	onPageWillEnter(){
 		if(this.stockService.isOpening()){
-			
+			this.fetch();
 		}else{
 			
 		}
@@ -39,7 +39,10 @@ export class Home {
 			clearTimeout(this.timer);
 		}
 	}
-	
+	setStocks(){
+		this.codes=this.localData.getFavors();
+		this.stocks=this.stockService.getStocks(this.codes)
+	}
 	isIncrease(stock){
 		return stock.close>stock.last;
 	}
@@ -47,7 +50,7 @@ export class Home {
 		return stock.last>stock.close;
 	}
 	getDiff(stock){
-		return stock.close-stock.last;
+		return stock.last?stock.close-stock.last:'-';
 	}
 	getPercent(stock){
 		if(stock.last===0 || stock.close===0){
@@ -67,10 +70,11 @@ export class Home {
   fetch(stocks){
 		let codes=this.localData.getFavors();
     this.stockService.fetchDay(codes).then(()=>{
-			let data=this.stockService.getData();
-			this.stocks=codes.map(code=>{
-				return data[code]
-			})
+			// let data=this.stockService.getData();
+			// this.stocks=codes.map(code=>{
+			// 	return data[code]
+			// })
+			this.setStocks();
 		});
   }
   gotoDetail(stock){
