@@ -47,6 +47,23 @@ export class StockService {
     }
     return false;
   }
+  isRankingsValid(sort){
+    let d=new Date(),day=d.getDay();
+    if(day>0 && day<6){
+      let start=moment.default({hour: 9, minute: 15}),
+          end=moment.default({hour:15,minutes:15}),
+          now = moment.default();
+      if(now<start && this._data[sort].date){
+        return true;
+      }
+      if(now>end && this._data[sort].date>end){
+        return true;
+      }
+      return false;
+    }else{
+      
+    }
+  }
 	getData(){
 		return this._data;
 	}
@@ -342,5 +359,11 @@ export class StockService {
 			let stock=this._data[code];
 			return stock?stock:this.getNullStock(code);
 		});
+	}
+	getStockRankings(sort){
+	  if(this._data[sort]){
+	    return this._data[sort].data.map(code=>this._data[code]);
+	  }
+	  return [];
 	}
 }

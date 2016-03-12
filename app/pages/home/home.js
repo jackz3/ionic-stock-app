@@ -28,20 +28,43 @@ export class Home {
 		this.setStocks();
   }
 	onPageWillEnter(){
-		if(this.stockService.isOpening()){
-			this.fetch();
-		}else{
-			
-		}
+		this.polling();
 	}
 	onPageWillLeave(){
-	  if(this.timer){
-			clearTimeout(this.timer);
-		}
+	  this.clearTimer();
 	}
-	setStocks(){
-		this.codes=this.localData.getFavors();
-		this.stocks=this.stockService.getStocks(this.codes)
+	polling(){
+	  if(this.stockService.isOpening()){
+      if(this.type==='favors'){
+        this.fetchDay();
+      }else{
+        this.fetchRankings(this.type);
+      }
+      this.timer=setTimeout(this.polling.bind(this),8000);
+    }else{
+      clearTimer();
+      if(this.type==='favors'){
+        
+        
+      }else{
+      
+        
+      }
+    }
+	  
+	}
+	clearTimer(){
+	  if(this.timer){
+      clearTimeout(this.timer);
+    }
+	}
+	setStocks(sort){
+	  if(this.type==='favors'){
+      this.codes=this.localData.getFavors();
+      this.stocks=this.stockService.getStocks(this.codes);
+	  }else{
+	    this.stocks=this.stockService.getStockRankings(sort);
+	  }
 	}
 	isIncrease(stock){
 		return stock.close>stock.last;
@@ -61,19 +84,12 @@ export class Home {
 	}
 	fetchRankings(sort){
 		this.stockService.fetchRankings(sort).then(()=>{
-			let data=this.stockService.getData();
-			if(data[sort]){
-				this.stocks=data[sort].data.map(code=>data[code]);
-			}
+		  this.setStocks(sort);
 		});
 	}
-  fetch(stocks){
+  fetchDay(stocks){
 		let codes=this.localData.getFavors();
     this.stockService.fetchDay(codes).then(()=>{
-			// let data=this.stockService.getData();
-			// this.stocks=codes.map(code=>{
-			// 	return data[code]
-			// })
 			this.setStocks();
 		});
   }
