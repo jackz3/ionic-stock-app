@@ -20,11 +20,6 @@ export class Home {
 		this.type=navParams.get('type')||'favors';
 		this.timer=0;
 		
-		// if(this.type==='favors'){
-		// 	this.fetch();	
-		// }else{
-		// 	this.fetchRankings(this.type);
-		// }
 		this.setStocks();
   }
 	onPageWillEnter(){
@@ -42,28 +37,31 @@ export class Home {
       }
       this.timer=setTimeout(this.polling.bind(this),8000);
     }else{
-      clearTimer();
+      this.clearTimer();
       if(this.type==='favors'){
-        
-        
+				let codes=this.localData.getFavors();
+        if(!this.stockService.hasStocks(codes)){
+					return this.fetchDay();
+				}
       }else{
-      
-        
+      	if(!this.stockService.hasRankings(this.type)){
+					return this.fetchRankings(this.type);
+				}
       }
+			this.setStocks();
     }
-	  
 	}
 	clearTimer(){
 	  if(this.timer){
       clearTimeout(this.timer);
     }
 	}
-	setStocks(sort){
+	setStocks(){
 	  if(this.type==='favors'){
-      this.codes=this.localData.getFavors();
-      this.stocks=this.stockService.getStocks(this.codes);
+      let codes=this.localData.getFavors();
+      this.stocks=this.stockService.getStocks(codes);
 	  }else{
-	    this.stocks=this.stockService.getStockRankings(sort);
+	    this.stocks=this.stockService.getStockRankings(this.type);
 	  }
 	}
 	isIncrease(stock){
@@ -84,7 +82,7 @@ export class Home {
 	}
 	fetchRankings(sort){
 		this.stockService.fetchRankings(sort).then(()=>{
-		  this.setStocks(sort);
+		  this.setStocks();
 		});
 	}
   fetchDay(stocks){

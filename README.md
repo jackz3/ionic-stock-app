@@ -12,6 +12,7 @@
 
 - [ ] auto refresh data
 - [ ] complete charts
+- [ ] modify favorates
 - [ ] bundle
 - [ ] stock detail info (F10)
 - [ ] unit tests

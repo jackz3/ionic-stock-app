@@ -249,6 +249,7 @@ export class StockService {
     this.setMA(arr, 10, start, count);
     this.setMA(arr, 20, start, count);
   }
+	
   load() {
     if (this.data) {
       // already loaded data
@@ -289,30 +290,6 @@ export class StockService {
     return data;
   }
 
-  processSession(data, session) {
-    // loop through each speaker and load the speaker data
-    // using the speaker name as the key
-    session.speakers = [];
-    if (session.speakerNames) {
-      session.speakerNames.forEach(speakerName => {
-        let speaker = data.speakers.find(s => s.name === speakerName);
-        if (speaker) {
-          session.speakers.push(speaker);
-          speaker.sessions = speaker.sessions || [];
-          speaker.sessions.push(session);
-        }
-      });
-    }
-
-    if (session.tracks) {
-      session.tracks.forEach(track => {
-        if (data.tracks.indexOf(track) < 0) {
-          data.tracks.push(track);
-        }
-      });
-    }
-  }
-
   getTimeline(dayIndex, queryText='', excludeTracks=[], segment='all') {
     return this.load().then(data => {
       let day = data.schedule[dayIndex];
@@ -342,17 +319,14 @@ export class StockService {
   }
 
   
-  getSpeakers() {
-    return this.load().then(data => {
-      return data.speakers.sort((a, b) => {
-        let aName = a.name.split(' ').pop();
-        let bName = b.name.split(' ').pop();
-        return aName.localeCompare(bName);
-      });
-    });
-  }
 	getNullStock(code){
 		return {code,last:0}
+	}
+	hasStocks(codes){
+		return codes.every(code=>this._data[code]);
+	}
+	hasRankings(sort){
+		return !!this._data[sort]
 	}
 	getStocks(codes){
 		return codes.map(code=>{

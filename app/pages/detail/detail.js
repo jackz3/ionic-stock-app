@@ -15,7 +15,8 @@ export class Detail {
     this.stockService=stockService;
 		this.nav=nav;
 		this.code=navParams.get('code');
-    
+    this.timer=0;
+		
 		this.stock={};
 		this.updateFavorBtn();
 		this.setStock();
@@ -26,19 +27,59 @@ export class Detail {
 			this.showBuySell=true;
 		}
   }
+	onPageWillEnter(){
+		this.polling();
+	}
+	onPageWillLeave(){
+	  this.clearTimer();
+	}
+	polling(){
+		if(this.stockService.isOpening()){
+			
+			this.timer=setTimeout(this.polling.bind(this),8000);
+		}else{
+			this.clearTimer();
+		}
+	}
+	pollingChart(){
+		this.stockService.fetchMinutes(this.code).then(()=>{
+			
+		});
+	}
+	clearTimer(){
+	  if(this.timer){
+      clearTimeout(this.timer);
+    }
+	}
+	initCanvas(){
+		var canvas=React.findDOMNode(this.refs.canvas);
+    var ctx = canvas.getContext("2d");
+    ctx.canvas.width  = 640;//this.props.width;
+    ctx.canvas.height = 480;//this.props.width*0.6;
+    
+    var wrapper=React.findDOMNode(this);
+    var labels=wrapper.querySelectorAll('.chartLabel');
+    this.props.setLabelStyle(labels[0],2,2,'red');
+    //$labels.eq(1).css({top:priceHeight/2-20,left:2,color:'black'});
+    this.props.setLabelStyle(labels[2],priceHeight-18,2,'green');
+    this.props.setLabelStyle(labels[3],priceHeight+timeHeight+2,2,'black');
+    
+    this.bufCanvas = document.createElement('canvas');
+    this.bufCanvas.width = 640;//this.minChart.width;
+    this.bufCanvas.height = 480;//this.minChart.height;
+	}
 	updateFavorBtn(){
 		let favors=this.localData.getFavors();
 		this.isFavor=favors.includes(this.code);
 	}
 	setStock(){
-		let data=this.stockService.getData();
-		let stock=data[this.code];
+		let data=this.stockService.getStocks([this.code]);
+		let stock=data[0];
 		if(stock){
 			this.stock=stock;			
 		}else{
 			this.fetch();
 		}
-		
 	}
 	fetch(){
 		let codes=[this.code];

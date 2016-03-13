@@ -33,7 +33,7 @@ export class Search {
 		this.q='';
 	}
 	gotoDetail(stock){
-		this.close();
+		//this.close();
 		this.nav.push(Detail,{code:stock.city+stock.codeS});
 	}
 }
