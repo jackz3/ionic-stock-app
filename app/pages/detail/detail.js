@@ -19,6 +19,7 @@ export class Detail {
 		this.code=navParams.get('code');
     this.timer=0;
 		this.stock={};
+		this.chartType='minutes';
 		this.minChart={};
 		
 		if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
@@ -30,11 +31,13 @@ export class Detail {
 		
   }
 	onPageLoaded(){
-		this.initCanvas();
+		//this.initCanvas();
+		setTimeout(this.initCanvas.bind(this),0);
 	}
 	onPageWillEnter(){
 		this.polling();
 		this.pollingChart();
+		
 	}
 	onPageWillLeave(){
 	  this.clearTimer();
@@ -62,7 +65,7 @@ export class Detail {
 				
 			}else{
 				this.stockService.fetchMinutes(this.code).then(()=>{
-					renderMinutes();
+					this.renderMinutes();
 				});	
 			}
 				
@@ -74,16 +77,16 @@ export class Detail {
     }
 	}
 	initCanvas(){
-		debugger;
-		let width=window.innerWidth;
+    let wrapper=document.querySelector('.canvas-wrapper');
+		let width=wrapper.clientWidth;
 		console.log(width)
     
-    this.minChart.width=width;
+		this.minChart.width=width;
     let canvasHeight=this.minChart.height=width*0.667,
         priceHeight=Math.floor(canvasHeight/5)*4-18-1,
         timeHeight=18,
         volumeHeight=canvasHeight-priceHeight-timeHeight;
-				
+		
     var canvas=document.getElementById('stock-chart');
     var ctx = canvas.getContext("2d");
     ctx.canvas.width  = width;
@@ -94,19 +97,23 @@ export class Detail {
     this.minChart.volumeHeight=volumeHeight;
     this.minChart.minStep= (width-2)/242;
     
-    // var wrapper=React.findDOMNode(this);
-    // var labels=wrapper.querySelectorAll('.chartLabel');
-    // this.props.setLabelStyle(labels[0],2,2,'red');
-    // this.props.setLabelStyle(labels[1],priceHeight/2-18,2,'black');
-    // this.props.setLabelStyle(labels[2],priceHeight-18,2,'green');
-    // this.props.setLabelStyle(labels[3],priceHeight+timeHeight+2,2,'black');
-    // this.props.setLabelStyle(labels[4],2,width-48,'red');
-    // this.props.setLabelStyle(labels[5],priceHeight-18,width-48,'green');
+		var labels=wrapper.querySelectorAll('.chartLabel');
+    this.setLabelStyle(labels[0],2,2,'red');
+    this.setLabelStyle(labels[1],priceHeight/2-18,2,'black');
+    this.setLabelStyle(labels[2],priceHeight-18,2,'green');
+    this.setLabelStyle(labels[3],priceHeight+timeHeight+2,2,'black');
+    this.setLabelStyle(labels[4],2,width-48,'red');
+    this.setLabelStyle(labels[5],priceHeight-18,width-48,'green');
 		
     this.bufCanvas = document.createElement('canvas');
     this.bufCanvas.width = this.minChart.width;
     this.bufCanvas.height = this.minChart.height;
 	}
+	setLabelStyle(el,top,left,color){
+    el.style.top=top+'px';
+    el.style.left=left+'px';
+    el.style.color=color;
+  }
 	renderMinutes(){
 		var width=this.minChart.width,
         canvasHeight=this.minChart.height,
@@ -137,17 +144,19 @@ export class Detail {
         bufCtx.fillText('11:30/13:00',width/2,priceHeight+1);
         bufCtx.textAlign='right';
         bufCtx.fillText('15:00',width,priceHeight+1);
-        
+    
+		var canvas=document.getElementById('stock-chart');
+    var ctx = canvas.getContext("2d");
     ctx.drawImage(this.bufCanvas,0,0);
         
     var code=this.code,
-            minData=this.stockService.getMinutes(code);
+        minData=this.stockService.getMinutes(code);
     if(this.stock && minData){
-          var last=data[code].last,
-              t1=Math.abs(data[code].high-last),
-              t2=Math.abs(data[code].low-last),
-              margin=t1>t2?t1:t2;
-          //var $labels=this.$el.find('#mChart span');
+      let last=this.stock.last,
+          t1=Math.abs(this.stock.high-last),
+          t2=Math.abs(this.stock.low-last),
+          margin=t1>t2?t1:t2;
+          
           var percent= Math.ceil(margin*1000/last);
           margin=percent*last/1000;
           var max=Math.ceil((last+margin)*100)/100,
@@ -156,26 +165,47 @@ export class Detail {
               range=max-min;
           this.minChart.max=max;
           this.minChart.range=range;
+      
+			var maxVol=Math.max.apply(null,minData.map(stock=>isNaN(stock.volume)?0:stock.volume));
+      this.minChart.maxVolume=maxVol=Math.ceil(maxVol/1000)*1000;
           
-          var maxVol=Math.max(...minData.map((stock)=>stock.volume));
-          this.minChart.maxVolume=maxVol=Math.ceil(maxVol/1000)*1000;
+			let labels=document.querySelectorAll('span.chartLabel');
+			labels[0].innerHTML=max;
+      labels[1].innerHTML=last;
+      labels[2].innerHTML=min.toFixed(2);
+      labels[3].innerHTML=maxVol;
+      labels[4].innerHTML=maxPercent.toFixed(2)+'%';
+      labels[5].innerHTML=maxPercent.toFixed(2)+'%';
           
-          // $labels.eq(0).text(max);
-          // $labels.eq(1).text(last);
-          // $labels.eq(2).text(min.toFixed(2));
-          // $labels.eq(3).text(maxVol);
-          // $labels.eq(4).text(maxPercent.toFixed(2)+'%');
-          // $labels.eq(5).text(maxPercent.toFixed(2)+'%');
-          
-          var cntx=this.bufCanvas.getContext('2d');
+      var cntx=this.bufCanvas.getContext('2d');
           cntx.clearRect(0,0,this.minChart.width,this.minChart.height);
           
-          this.drawPriceLine(ctx, minData, 'price', 'blue');
-          this.drawPriceLine(ctx, minData, 'avg_price', 'grey');
-          this.drawVolumeLine(ctx, minData, data[code].last);
-          cntx.drawImage(this.bufCanvas,0,0);
-				}
+      this.drawPriceLine(ctx, minData, 'price', 'blue');
+      this.drawPriceLine(ctx, minData, 'avg_price', 'grey');
+      this.drawVolumeLine(ctx, minData, this.stock.last);
+      cntx.drawImage(this.bufCanvas,0,0);
+		}
 	}
+	drawPriceLine(ctx,mdata,priceName,color){
+    var step=this.minChart.minStep,
+        x=1+step/2,
+        price=mdata[0][priceName],
+        max=this.minChart.max,
+        range=this.minChart.range,
+        height=this.minChart.priceHeight-1;
+    ctx.beginPath();
+    ctx.moveTo(x,(max-price)/range*height+0.5);
+    for(var i=1;i<242;i++){
+      price=mdata[i][priceName];
+      if(price===-0.001){
+        break;
+      }
+      x+=step;
+      ctx.lineTo(x,(max-price)/range*height+0.5);
+    }
+    ctx.strokeStyle=color;
+    ctx.stroke();
+  }
 	drawVolumeLine(ctx,mdata,open){
     var step=this.minChart.minStep,
         x=1+step/2,
@@ -184,7 +214,8 @@ export class Detail {
         canvasHeight=this.minChart.height,
         top=canvasHeight-height,
         lastPrice=open,price,vol,color='';
-    
+    console.log(height);
+		console.log(canvasHeight)
     ctx.beginPath();
     ctx.strokeStyle='red';
     for(var i=0;i<242;i++){

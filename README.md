@@ -10,7 +10,6 @@
 
 ### TODO
 
-- [ ] auto refresh data
 - [ ] complete charts
 - [ ] modify favorates
 - [ ] bundle
