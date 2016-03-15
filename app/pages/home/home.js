@@ -5,6 +5,8 @@ import {PriceDiff} from '../../providers/price-diff';
 import {Detail} from '../detail/detail';
 import {Search} from '../search/search';
 
+const INTERVAL=8000;
+
 @Page({
   templateUrl: 'build/pages/home/home.html',
 	pipes: [PriceDiff]
@@ -35,7 +37,7 @@ export class Home {
       }else{
         this.fetchRankings(this.type);
       }
-      this.timer=setTimeout(this.polling.bind(this),8000);
+      this.timer=setTimeout(this.polling.bind(this),INTERVAL);
     }else{
       this.clearTimer();
       if(this.type==='favors'){

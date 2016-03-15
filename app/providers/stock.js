@@ -328,6 +328,12 @@ export class StockService {
 	hasRankings(sort){
 		return !!this._data[sort]
 	}
+	getMinutes(code){
+		return this._data['m_'+code];
+	}
+	getStock(code){
+		return this._data[code];
+	}
 	getStocks(codes){
 		return codes.map(code=>{
 			let stock=this._data[code];
