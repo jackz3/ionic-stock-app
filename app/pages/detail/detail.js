@@ -58,11 +58,13 @@ export class Detail {
 	}
 	pollingChart(){
 		if(this.stockService.isOpening()){
-			
+			this.stockService.fetchMinutes(this.code).then(()=>{
+					this.renderMinutes();
+			});	
 		}else{
 			let mins=this.stockService.getMinutes(this.code);
 			if(mins){
-				
+				this.renderMinutes();
 			}else{
 				this.stockService.fetchMinutes(this.code).then(()=>{
 					this.renderMinutes();
