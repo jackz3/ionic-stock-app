@@ -1,4 +1,4 @@
-import {App, IonicApp } from 'ionic-framework/ionic';
+import {App, IonicApp } from 'ionic-angular';
 import {LocalData} from './providers/local-data';
 import {StockService,CLOSE_INCREASE,CLOSE_DECLINE} from './providers/stock';
 import {Home} from './pages/home/home';

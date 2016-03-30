@@ -1,4 +1,4 @@
-import {Page,NavController,NavParams,Modal} from 'ionic-framework/ionic';
+import {Page,NavController,NavParams,Modal} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
 import {PriceDiff} from '../../providers/price-diff';

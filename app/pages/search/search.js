@@ -1,4 +1,4 @@
-import {Page,NavController,ViewController} from 'ionic-framework/ionic';
+import {Page,NavController,ViewController} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
 import {Detail} from '../detail/detail';

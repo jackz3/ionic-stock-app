@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/core';
-import {Storage, LocalStorage} from 'ionic-framework/ionic';
+import {Storage, LocalStorage} from 'ionic-angular';
 
 @Injectable()
 export class LocalData {
