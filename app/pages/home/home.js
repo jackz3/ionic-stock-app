@@ -1,6 +1,7 @@
 import {Page,NavController,NavParams,Modal} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
+import {MenuService} from '../../providers/menu';
 import {PriceDiff} from '../../providers/price-diff';
 import {Detail} from '../detail/detail';
 import {Search} from '../search/search';
@@ -13,11 +14,12 @@ const INTERVAL=8000;
 })
 export class Home {
   static get parameters() {
-    return [[LocalData],[StockService],[NavController],[NavParams]];
+    return [[LocalData],[StockService],[MenuService],[NavController],[NavParams]];
   }
-  constructor(localData,stockService,nav,navParams){
+  constructor(localData,stockService,menuService,nav,navParams){
     this.localData=localData;
     this.stockService=stockService;
+		this.menuService=menuService;
 		this.nav=nav;
 		this.type=navParams.get('type')||'favors';
 		this.timer=0;
@@ -26,6 +28,7 @@ export class Home {
   }
 	onPageWillEnter(){
 		this.polling();
+		this.menuService.buildMenu(this.type);
 	}
 	onPageWillLeave(){
 	  this.clearTimer();

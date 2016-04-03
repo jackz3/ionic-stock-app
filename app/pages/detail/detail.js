@@ -1,6 +1,7 @@
 import {Page,NavParams,NavController,Alert,Modal} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
+import {MenuService} from '../../providers/menu';
 import {Search} from '../search/search';
 
 const PRICE_INTERVAL=6000;
@@ -10,11 +11,12 @@ const PRICE_INTERVAL=6000;
 })
 export class Detail {
   static get parameters() {
-    return [[LocalData],[StockService],[NavParams],[NavController]];
+    return [[LocalData],[StockService],[MenuService],[NavParams],[NavController]];
   }
-  constructor(localData,stockService,navParams,nav){
+  constructor(localData,stockService,menuService,navParams,nav){
     this.localData=localData;
     this.stockService=stockService;
+		this.menuService=menuService;
 		this.nav=nav;
 		this.code=navParams.get('code');
     this.timer=0;
@@ -37,7 +39,7 @@ export class Detail {
 	onPageWillEnter(){
 		this.polling();
 		this.pollingChart();
-		
+		this.menuService.buildMenu('detail');
 	}
 	onPageWillLeave(){
 	  this.clearTimer();
@@ -216,9 +218,8 @@ export class Detail {
         canvasHeight=this.minChart.height,
         top=canvasHeight-height,
         lastPrice=open,price,vol,color='';
-    console.log(height);
-		console.log(canvasHeight)
-    ctx.beginPath();
+    
+		ctx.beginPath();
     ctx.strokeStyle='red';
     for(var i=0;i<242;i++){
       price=mdata[i].price;
