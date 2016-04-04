@@ -2,7 +2,7 @@
   <button menuToggle>
     <ion-icon name="menu"></ion-icon>
   </button>
-  <ion-title *ngIf="!searchBar">自选股</ion-title>
+  <ion-title *ngIf="!searchBar">{{title}}</ion-title>
 	<ion-searchbar *ngIf="searchBar" (cancel)="onCancelSearch($event)"></ion-searchbar>
 	<ion-buttons end>
 	<button (click)="showSearchBar()">
@@ -16,14 +16,14 @@
     <ion-item class="list-item" *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
 			<div>
 				<span class="list-code">{{stock.code.slice(2)}}</span><br>
-				<span class="list-name">{{stock.name}}</span>	
+				<span class="list-name">{{stock.name}}</span>
 			</div>
-			<div class="list-price" [class.red]="isIncrease(stock)" [class.green]="isDecline(stock)" item-right>
+			<div class="list-price" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
 				<span>{{stock.close}}</span>
 			</div>
-      <div class="list-percent" [class.red]="isIncrease(stock)" [class.green]="isDecline(stock)" item-right>
-				<span>{{getPercent(stock)}}</span><br>
-				<span>{{getDiff(stock)|PriceDiff}}</span>
+      <div class="list-percent" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
+				<span>{{stock.percent}}</span><br>
+				<span>{{stock.diff|PriceDiff}}</span>
 			</div>
     </ion-item>
   </ion-list>

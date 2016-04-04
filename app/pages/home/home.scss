@@ -37,3 +37,29 @@
 ion-content.cards-bg {
   background-color: #f4f4f7;
 }
+.detail-close{
+	font-size: 2em;
+}
+.detail-percent{
+	font-size:1.2em;
+}
+.stock-cell{
+	text-align: center;
+	border-top: 1px solid #f4f4f7;
+	border-left: 1px solid #f4f4f7;
+}
+.stock-cell span{
+	color:#333;
+}
+.stock-cell em{
+	display: inline-block;
+	margin-top:5px;
+	font-size: 1em;
+}
+.stock-prices{
+	text-align: center;
+}
+.price-label{
+	color:#333;
+	font-size:0.9em;
+}

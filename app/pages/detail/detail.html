@@ -12,35 +12,49 @@
 
 <ion-content class="cards-bg">
 	<ion-card>
-
-  <ion-item>
-    <ion-label>{{stock.close}}</ion-label>
-		<button primary clear item-right (click)="addRemove()">
-			<ion-icon [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
-      <!--<ion-icon *ngIf="isFavor" name="remove-circle"></ion-icon>
-			<ion-icon *ngIf="!isFavor" name="add-circle"></ion-icon>-->
-    </button>
-  </ion-item>
-	<ion-item>
-		<ion-label>开盘</ion-label>
-    <ion-label>{{stock.open}}</ion-label>
-		<ion-label>{{stock.high}}</ion-label>
-		<ion-label>{{stock.low}}</ion-label>
-  </ion-item>
-  <ion-item>
-    <button primary clear item-left>
-      <ion-icon name="thumbs-up"></ion-icon>
-      <div>12 Likes</div>
-    </button>
-    <button primary clear item-left>
-      <ion-icon name="text"></ion-icon>
-      <div>4 Comments</div>
-    </button>
-    <ion-note item-right>
-      11h ago
-    </ion-note>
-  </ion-item>
-
+		<ion-row center class="stock-prices" [class.red]="stock.isIncrease" [class.green]="stock.isDecline">
+  		<ion-col width-50 class="detail-close">{{stock.close}}</ion-col>
+			<ion-col width-20 class="detail-percent">
+				<span>{{stock.percent}}</span><br />
+				<span>{{stock.diff|PriceDiff}}</span>
+			</ion-col>
+			<ion-col offset-10 width-20>
+				<button primary clear (click)="addRemove()">
+				<ion-icon [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
+      	<!--<ion-icon *ngIf="isFavor" name="remove-circle"></ion-icon>
+				<ion-icon *ngIf="!isFavor" name="add-circle"></ion-icon>-->
+    		</button>
+			</ion-col>
+		</ion-row>
+ 		<ion-row>
+			<ion-col width-25 class="stock-cell"><span>开盘</span><br />
+				<em [class.red]="stock.open>stock.last" [class.green]="stock.last>stock.open">
+					{{stock.open}}</em></ion-col>
+    	<ion-col width-25 class="stock-cell"><span>昨收</span><br />
+				<em>{{stock.last}}</em>
+			</ion-col>
+			<ion-col width-25 class="stock-cell">
+				<span>最高</span><br />
+				<em>{{stock.high}}</em></ion-col>
+			<ion-col width-25 class="stock-cell">
+				<span>最低</span><br />
+				<em>{{stock.low}}</em></ion-col>
+  	</ion-row>
+  	<ion-row>
+			<ion-col width-25 class="stock-cell">
+				<span>均价</span><br />
+				<em>{{stock.open}}</em></ion-col>
+    	<ion-col width-25 class="stock-cell">
+				<span>换手率</span><br />
+				<em>{{stock.turnoverRate}}</em>
+			</ion-col>
+			<ion-col width-25 class="stock-cell">
+				<span>成交量</span><br />
+				<em>{{stock.volume}}</em></ion-col>
+			<ion-col width-25 class="stock-cell">
+				<span>成交额</span><br />
+				<em>{{stock.amount}}</em></ion-col>
+  	</ion-row>
 	</ion-card>
 	<div padding>
   <ion-segment [(ngModel)]="chartType">
@@ -71,46 +85,46 @@
       <span class="chartLabel"></span>
       <canvas id="stock-chart"></canvas>
     </div>
-	<ion-card *ngIf="showBuySell">
-  	<ion-item>
-			<ion-label>买1</ion-label>
-    	<ion-label>{{stock.buy1}}</ion-label>
-			<ion-label>{{stock.buy1Vol}}</ion-label>
-			<ion-label>卖1</ion-label>
-			<ion-label>{{stock.sell1}}</ion-label>
-			<ion-label>{{stock.sell1Vol}}</ion-label>
-  	</ion-item>
-  	<ion-item>
-			<ion-label>买2</ion-label>
-    	<ion-label>{{stock.buy2}}</ion-label>
-			<ion-label>{{stock.buy2Vol}}</ion-label>
-			<ion-label>卖2</ion-label>
-			<ion-label>{{stock.sell2}}</ion-label>
-			<ion-label>{{stock.sell2Vol}}</ion-label>
-  	</ion-item>
-		<ion-item>
-			<ion-label>买3</ion-label>
-    	<ion-label>{{stock.buy3}}</ion-label>
-			<ion-label>{{stock.buy3Vol}}</ion-label>
-			<ion-label>卖3</ion-label>
-			<ion-label>{{stock.sell3}}</ion-label>
-			<ion-label>{{stock.sell3Vol}}</ion-label>
-  	</ion-item>
-		<ion-item>
-			<ion-label>买4</ion-label>
-    	<ion-label>{{stock.buy4}}</ion-label>
-			<ion-label>{{stock.buy4Vol}}</ion-label>
-			<ion-label>卖4</ion-label>
-			<ion-label>{{stock.sell4}}</ion-label>
-			<ion-label>{{stock.sell4Vol}}</ion-label>
-  	</ion-item>
-		<ion-item>
-			<ion-label>买5</ion-label>
-    	<ion-label>{{stock.buy5}}</ion-label>
-			<ion-label>{{stock.buy5Vol}}</ion-label>
-			<ion-label>卖5</ion-label>
-			<ion-label>{{stock.sell5}}</ion-label>
-			<ion-label>{{stock.sell5Vol}}</ion-label>
-  	</ion-item>
+	<ion-card *ngIf="showBuySell" class="stock-prices">
+		<ion-row center>
+			<ion-col width-10 class="price-label">买1</ion-col>
+			<ion-col width-20 [class.red]="stock.buy1>stock.last" [class.green]="stock.last>stock.buy1">{{stock.buy1}}</ion-col>
+			<ion-col width-20>{{stock.buy1Vol}}</ion-col>
+			<ion-col width-10 class="price-label">卖1</ion-col>
+			<ion-col width-20 [class.red]="stock.sell1>stock.last" [class.green]="stock.last>stock.sell1">{{stock.sell1}}</ion-col>
+			<ion-col width-20>{{stock.sell1Vol}}</ion-col>
+		</ion-row>
+  	<ion-row center>
+			<ion-col width-10 class="price-label">买2</ion-col>
+			<ion-col width-20 [class.red]="stock.buy2>stock.last" [class.green]="stock.last>stock.buy2">{{stock.buy2}}</ion-col>
+			<ion-col width-20>{{stock.buy2Vol}}</ion-col>
+			<ion-col width-10 class="price-label">卖2</ion-col>
+			<ion-col width-20 [class.red]="stock.sell2>stock.last" [class.green]="stock.last>stock.sell2">{{stock.sell2}}</ion-col>
+			<ion-col width-20>{{stock.sell2Vol}}</ion-col>
+		</ion-row>
+		<ion-row center>
+			<ion-col width-10 class="price-label">买3</ion-col>
+			<ion-col width-20 [class.red]="stock.buy3>stock.last" [class.green]="stock.last>stock.buy3">{{stock.buy3}}</ion-col>
+			<ion-col width-20>{{stock.buy3Vol}}</ion-col>
+			<ion-col width-10 class="price-label">卖3</ion-col>
+			<ion-col width-20 [class.red]="stock.sell3>stock.last" [class.green]="stock.last>stock.sell3">{{stock.sell3}}</ion-col>
+			<ion-col width-20>{{stock.sell3Vol}}</ion-col>
+		</ion-row>
+		<ion-row center>
+			<ion-col width-10 class="price-label">买4</ion-col>
+			<ion-col width-20 [class.red]="stock.buy4>stock.last" [class.green]="stock.last>stock.buy4">{{stock.buy4}}</ion-col>
+			<ion-col width-20>{{stock.buy4Vol}}</ion-col>
+			<ion-col width-10 class="price-label">卖4</ion-col>
+			<ion-col width-20 [class.red]="stock.sell4>stock.last" [class.green]="stock.last>stock.sell4">{{stock.sell4}}</ion-col>
+			<ion-col width-20>{{stock.sell4Vol}}</ion-col>
+		</ion-row>
+		<ion-row center>
+			<ion-col width-10 class="price-label">买5</ion-col>
+			<ion-col width-20 [class.red]="stock.buy5>stock.last" [class.green]="stock.last>stock.buy5">{{stock.buy5}}</ion-col>
+			<ion-col width-20>{{stock.buy5Vol}}</ion-col>
+			<ion-col width-10 class="price-label">卖5</ion-col>
+			<ion-col width-20 [class.red]="stock.sell5>stock.last" [class.green]="stock.last>stock.sell5">{{stock.sell5}}</ion-col>
+			<ion-col width-20>{{stock.sell5Vol}}</ion-col>
+		</ion-row>
 	</ion-card>
 </ion-content>

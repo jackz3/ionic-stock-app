@@ -6,7 +6,7 @@
     "ionic-angular": "2.0.0-beta.3",
     "ionic-native": "^1.1.0",
     "ionicons": "3.0.0-alpha.3",
-		"moment": "^2.11.2",
+    "moment": "^2.11.2",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.0",
     "zone.js": "0.5.14"
@@ -38,8 +38,12 @@
       "platform": "ios",
       "version": "",
       "locator": "ios"
+    },
+    {
+      "platform": "android",
+      "locator": "browser"
     }
   ],
-  "name": "ibeta",
-  "description": "ibeta: An Ionic project"
+  "name": "yunguba-ionic",
+  "description": "A chinese stock market App built with Ionic2 + Angular2 + ES2015"
 }

@@ -22,7 +22,6 @@ export class Search {
 		let q=searchBar.value.trim();
 		if(!q) 	return;
 		this.stockService.findStocks(searchBar.value).then(results=>{
-			console.log(results);
 			this.results=results;
 		});
 	}

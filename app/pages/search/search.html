@@ -9,7 +9,7 @@
 <ion-content>
 	<ion-list>
     <ion-item *ngFor="#item of results" (click)="gotoDetail(item)">
-			<ion-label>{{item.city+item.codeS}}</ion-label>
+			<ion-label>{{item.codeS}}</ion-label>
 			<ion-label>{{item.name}}</ion-label>
       <button>add</button>
     </ion-item>

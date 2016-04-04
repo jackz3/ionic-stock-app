@@ -1,6 +1,6 @@
 import {Page,NavController,NavParams,Modal} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
-import {StockService} from '../../providers/stock';
+import {StockService,CLOSE_INCREASE,CLOSE_DECLINE} from '../../providers/stock';
 import {MenuService} from '../../providers/menu';
 import {PriceDiff} from '../../providers/price-diff';
 import {Detail} from '../detail/detail';
@@ -23,7 +23,16 @@ export class Home {
 		this.nav=nav;
 		this.type=navParams.get('type')||'favors';
 		this.timer=0;
-		
+		switch(this.type){
+			case CLOSE_INCREASE:
+				this.title='涨幅榜'
+				break;
+			case CLOSE_DECLINE:
+				this.title='跌幅榜'
+				break;
+			default:
+				this.title='自选股'	
+		}
 		this.setStocks();
   }
 	onPageWillEnter(){
@@ -68,22 +77,6 @@ export class Home {
 	  }else{
 	    this.stocks=this.stockService.getStockRankings(this.type);
 	  }
-	}
-	isIncrease(stock){
-		return stock.close>stock.last;
-	}
-	isDecline(stock){
-		return stock.last>stock.close;
-	}
-	getDiff(stock){
-		return stock.last?stock.close-stock.last:'-';
-	}
-	getPercent(stock){
-		if(stock.last===0 || stock.close===0){
-			return '-'
-		}
-		let diff=this.getDiff(stock);
-		return Math.abs(diff*100/stock.last).toFixed(2)+'%'
 	}
 	fetchRankings(sort){
 		this.stockService.fetchRankings(sort).then(()=>{

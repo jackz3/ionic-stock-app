@@ -2,12 +2,14 @@ import {Page,NavParams,NavController,Alert,Modal} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
 import {MenuService} from '../../providers/menu';
+import {PriceDiff} from '../../providers/price-diff';
 import {Search} from '../search/search';
 
 const PRICE_INTERVAL=6000;
 
 @Page({
-  templateUrl: 'build/pages/detail/detail.html'
+  templateUrl: 'build/pages/detail/detail.html',
+	pipes: [PriceDiff]
 })
 export class Detail {
   static get parameters() {
@@ -33,7 +35,6 @@ export class Detail {
 		
   }
 	onPageLoaded(){
-		//this.initCanvas();
 		setTimeout(this.initCanvas.bind(this),0);
 	}
 	onPageWillEnter(){
@@ -51,7 +52,7 @@ export class Detail {
 		}else{
 			this.clearTimer();
 			let stock=this.stockService.getStock(this.code);
-			if(stock){
+			if(stock && stock.date){
 				this.stock=stock;
 			}else{
 				this.fetchStock();
@@ -66,7 +67,7 @@ export class Detail {
 		}else{
 			let mins=this.stockService.getMinutes(this.code);
 			if(mins){
-				this.renderMinutes();
+				setTimeout(this.renderMinutes.bind(this),0);
 			}else{
 				this.stockService.fetchMinutes(this.code).then(()=>{
 					this.renderMinutes();
@@ -84,7 +85,7 @@ export class Detail {
     let wrapper=document.querySelector('.canvas-wrapper');
 		let width=wrapper.clientWidth;
 		console.log(width)
-    
+    //debugger;
 		this.minChart.width=width;
     let canvasHeight=this.minChart.height=width*0.667,
         priceHeight=Math.floor(canvasHeight/5)*4-18-1,
@@ -305,4 +306,5 @@ export class Detail {
 		
 		}
 	}
+
 }

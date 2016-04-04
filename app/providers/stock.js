@@ -24,6 +24,16 @@ function getScript(url){
   });
   return promise;
 }
+function procStock(stock){
+	stock.isIncrease=stock.close>stock.last;
+	stock.isDecline=stock.last>stock.close;
+	stock.diff=stock.last?stock.close-stock.last:'-';
+	if(stock.last===0 || stock.close===0){
+		stock.percent='-';
+	}else{
+		stock.percent=Math.abs(stock.diff*100/stock.last).toFixed(2)+'%'
+	}
+}
 
 @Injectable()
 export class StockService {
@@ -123,6 +133,8 @@ export class StockService {
               turnoverRate:values[38],
 							date
             };
+						procStock(v);
+						
             if(code==='sh000001' || code.slice(0,5)==='sz399'){
               v.avg='';
             }else{
@@ -157,6 +169,7 @@ export class StockService {
             amount:parseInt(values[8]),
             volume:parseInt(values[9]),
           };
+					procStock(v);
 					r.push(code);
 					this._data[code]=Object.assign(this._data[code]||{},v);
 				});
@@ -346,4 +359,5 @@ export class StockService {
 	  }
 	  return [];
 	}
+	
 }
