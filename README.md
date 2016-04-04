@@ -1,6 +1,5 @@
 # yunguba-ionic
-A chinese stock market App built with Ionic2 + Angular2 + ES2015.
-    
+A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](http://yunguba.duapp.com)
 
 ### Getting Started
 
@@ -22,6 +21,8 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015.
 - [ ] complete charts
 - [ ] modify favorates
 - [ ] bundle
-- [ ] stock detail info (F10)
+- [ ] loading indicator
+- [ ] stock detail finance info (F10)
 - [ ] unit tests
-- [ ] support pad/tablet style
+- [ ] pad/tablet style
+- [ ] pull to refresh
