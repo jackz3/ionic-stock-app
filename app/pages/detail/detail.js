@@ -261,6 +261,9 @@ export class Detail {
 			this.stock=this.stockService.getStock(this.code);
 		});
   }
+	updateChart(){
+		
+	}
 	showSearchBar(){
 		let modal = Modal.create(Search);
     this.nav.present(modal)

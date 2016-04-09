@@ -1,4 +1,4 @@
-import {Page,NavController,NavParams,Modal} from 'ionic-angular';
+import {Page,NavController,NavParams,Modal,Loading} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService,CLOSE_INCREASE,CLOSE_DECLINE} from '../../providers/stock';
 import {MenuService} from '../../providers/menu';
@@ -33,10 +33,18 @@ export class Home {
 			default:
 				this.title='自选股'	
 		}
-		this.setStocks();
+		this.showLoading=true;
   }
 	onPageWillEnter(){
 		this.polling();
+	}
+	onPageDidEnter(){
+		if(this.showLoading){
+			this.loading = Loading.create({
+    		content: '载入中...'
+  		});
+			this.nav.present(this.loading);
+		}
 		this.menuService.buildMenu(this.type);
 	}
 	onPageWillLeave(){
@@ -71,6 +79,12 @@ export class Home {
     }
 	}
 	setStocks(){
+		if(this.showLoading){
+			this.showLoading=false;
+			if(this.loading){
+				this.loading.dismiss();
+			}
+		}
 	  if(this.type==='favors'){
       let codes=this.localData.getFavors();
       this.stocks=this.stockService.getStocks(codes);
