@@ -22,6 +22,7 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](ht
 - [ ] modify favorates
 - [ ] bundle
 - [x] loading indicator
+- [ ] url router
 - [ ] stock detail finance info (F10)
 - [ ] unit tests
 - [ ] pad/tablet style

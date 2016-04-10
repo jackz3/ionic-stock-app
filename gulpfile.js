@@ -64,7 +64,7 @@ gulp.task('clean', function(){
 gulp.task('clean-web',function(cb){
 	del([destPath+'/**','!'+destPath+'/.git/**'],{force:true},cb);
 })
-gulp.task('copy',function(){
+gulp.task('copy-web',function(){
 	gulp.src(['platforms/browser/www/**'])
 			.pipe(gulp.dest(destPath));
 });
@@ -74,5 +74,5 @@ gulp.task('uglify',function() {
 	.pipe(gulp.dest(destPath+'/build/js'));
 });
 gulp.task('build-web',function(cb){
-	sequence('clean-web','copy','uglify',cb);
+	sequence('clean-web','copy-web','uglify',cb);
 });
