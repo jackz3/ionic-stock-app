@@ -61,19 +61,16 @@
     <ion-segment-button value="minutes">
       分时
     </ion-segment-button>
-    <ion-segment-button value="day">
+    <ion-segment-button value="days">
       日K
     </ion-segment-button>
-		<ion-segment-button value="week">
+		<ion-segment-button value="weeks">
       周K
     </ion-segment-button>
-		<ion-segment-button value="month">
+		<ion-segment-button value="months">
       月K
     </ion-segment-button>
   </ion-segment>
-	</div>
-	<div [ngSwitch]="chartType">
-		
 	</div>
 	<div class="canvas-wrapper" >
       <span class="chartLabel"></span>
@@ -84,7 +81,7 @@
       <span class="chartLabel"></span>
       <span class="chartLabel"></span>
       <canvas id="stock-chart"></canvas>
-    </div>
+  </div>
 	<ion-card *ngIf="showBuySell" class="stock-prices">
 		<ion-row center>
 			<ion-col width-10 class="price-label">买1</ion-col>

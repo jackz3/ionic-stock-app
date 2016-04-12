@@ -1,9 +1,10 @@
 import {Injectable} from 'angular2/core';
 import {Http} from 'angular2/http';
-import * as moment from 'moment';//'../../node_modules/moment/moment';
+import {default as moment } from 'moment';//'../../node_modules/moment/moment';
 
 export const CLOSE_INCREASE='CLOSE_INCREASE';
 export const CLOSE_DECLINE='CLOSE_DECLINE';
+//const moment=mo.default;
 
 function getScript(url){
   let promise = new Promise(function(resolve, reject){
@@ -48,9 +49,9 @@ export class StockService {
 	isOpening(){
     let d=new Date(),day=d.getDay();
     if(day>0 && day<6){
-      let start=moment.default({hour: 9, minute: 15}),
-          end=moment.default({hour:15,minutes:15}),
-          now = moment.default();
+      let start=moment({hour: 9, minute: 15}),
+          end=moment({hour:15,minutes:15}),
+          now = moment();
       if(now>start && now<end){
         return true;
       }
@@ -60,9 +61,9 @@ export class StockService {
   isRankingsValid(sort){
     let d=new Date(),day=d.getDay();
     if(day>0 && day<6){
-      let start=moment.default({hour: 9, minute: 15}),
-          end=moment.default({hour:15,minutes:15}),
-          now = moment.default();
+      let start=moment({hour: 9, minute: 15}),
+          end=moment({hour:15,minutes:15}),
+          now = moment();
       if(now<start && this._data[sort].date){
         return true;
       }
@@ -343,6 +344,9 @@ export class StockService {
 	}
 	getMinutes(code){
 		return this._data['m_'+code];
+	}
+	getKDays(code){
+		return this._data['kd_'+code];
 	}
 	getStock(code){
 		return this._data[code];
