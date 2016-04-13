@@ -247,6 +247,58 @@ export class StockService {
       }
     });
 	}
+	fetchKWeeks(code){
+		let url='http://data.gtimg.cn/flashdata/hushen/weekly/'+code+'.js?maxage=43201';
+    return getScript(url).then(()=>{
+			let val=window.weekly_data;
+      if(val){
+        window.weekly_data=null;
+        let origin=val.split('\n');
+        origin.shift();
+        var kdata=[],
+						len=origin.length-1;
+        for(var i=0;i<len;i++){
+          let t=origin[i].split(' ');
+          kdata[i]={
+            date:moment(t[0],'YYMMDD').toDate(),
+            open:parseFloat(t[1]),
+            close:parseFloat(t[2]),
+            high:parseFloat(t[3]),
+            low:parseFloat(t[4]),
+            volume:parseInt(t[5])
+          };
+        }
+        this._data['kw_'+code]=kdata;
+        this.procKData(this._data['kw_'+code],0,len);
+      }
+    });
+	}
+	fetchKMonths(code){
+		let url='http://data.gtimg.cn/flashdata/hushen/monthly/'+code+'.js?maxage=43201';
+    return getScript(url).then(()=>{
+			let val=window.monthly_data;
+      if(val){
+				window.monthly_data=null;
+        let origin=val.split('\n');
+        origin.shift();
+        var kdata=[],
+						len=origin.length-1;
+        for(var i=0;i<len;i++){
+          let t=origin[i].split(' ');
+          kdata[i]={
+            date:moment(t[0],'YYMMDD').toDate(),
+            open:parseFloat(t[1]),
+            close:parseFloat(t[2]),
+            high:parseFloat(t[3]),
+            low:parseFloat(t[4]),
+            volume:parseInt(t[5])
+          };
+        }
+        this._data['km_'+code]=kdata;
+        this.procKData(this._data['km_'+code],0,len);
+      }
+    });
+	}
 	setMA(d,num,start,end){
     var sum=0,prop='ma'+num;
     for(var i=1;i<=num;i++){
@@ -347,6 +399,12 @@ export class StockService {
 	}
 	getKDays(code){
 		return this._data['kd_'+code];
+	}
+	getKWeeks(code){
+		return this._data['kw_'+code];
+	}
+	getKMonths(code){
+		return this._data['km_'+code];
 	}
 	getStock(code){
 		return this._data[code];
