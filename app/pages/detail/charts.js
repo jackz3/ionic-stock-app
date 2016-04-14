@@ -11,7 +11,6 @@ export class StockCharts{
 	constructor(elemRef){
 		this.elemRef=elemRef;
 		this.mChart={};
-		this.kChart={};
 	}
 	ngAfterViewInit(){
 		setTimeout(this.init.bind(this),0);

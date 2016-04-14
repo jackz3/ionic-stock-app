@@ -5,6 +5,9 @@
   <ion-title *ngIf="!searchBar">{{title}}</ion-title>
 	<ion-searchbar *ngIf="searchBar" (cancel)="onCancelSearch($event)"></ion-searchbar>
 	<ion-buttons end>
+	<button *ngIf="type==='favors'" class="bar-btn bar-button-default" (click)="gotoModify()">
+    <ion-icon name="settings"></ion-icon>
+  </button>
 	<button (click)="showSearchBar()">
     <ion-icon name="search"></ion-icon>
   </button>

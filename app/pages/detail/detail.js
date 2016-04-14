@@ -82,7 +82,6 @@ export class Detail {
     }
 	}
 	initCanvas(){
-		//debugger
 		let wrapper=this.elemRef.nativeElement;
 		let width=wrapper.clientWidth;
 		console.log(width)
@@ -161,7 +160,7 @@ export class Detail {
     ctx.clearRect(0,0,width,canvasHeight);
     //ctx.beginPath();
     ctx.lineWidth=1;
-    ctx.strokeStyle='#666';
+    ctx.strokeStyle='#999';
     ctx.strokeRect(0.5, 0.5, width-1, priceHeight-1);
     ctx.strokeRect(0.5,priceHeight+timeHeight+0.5,width-1, volumeHeight-1);
         	

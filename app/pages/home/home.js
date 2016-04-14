@@ -5,6 +5,7 @@ import {MenuService} from '../../providers/menu';
 import {PriceDiff} from '../../providers/price-diff';
 import {Detail} from '../detail/detail';
 import {Search} from '../search/search';
+import {Modify} from '../modify/modify';
 
 const INTERVAL=8000;
 
@@ -106,6 +107,9 @@ export class Home {
   gotoDetail(stock){
 		this.nav.push(Detail,{code:stock.code});
   }
+	gotoModify(){
+		this.nav.push(Modify);
+	}
 	showSearchBar(){
 		//this.searchBar=true;
 		let modal = Modal.create(Search);
