@@ -3,6 +3,7 @@ import {LocalData} from '../../providers/local-data';
 import {MenuService} from '../../providers/menu';
 import {StockService} from '../../providers/stock';
 import {Detail} from '../detail/detail';
+import {Search} from '../search/search';
 
 @Page({
   templateUrl: 'build/pages/modify/modify.html',
@@ -51,5 +52,9 @@ export class Modify {
     	});
 			this.nav.present(confirm);
 			evt.stopPropagation();
+	}
+	showSearchBar(){
+		let modal = Modal.create(Search);
+    this.nav.present(modal)
 	}
 }

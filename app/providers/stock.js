@@ -92,8 +92,9 @@ export class StockService {
 							v.push({
 								city:line[0],
 								codeS:line[1],
-								name:line[2]
-							})
+								name:line[2],
+								code:line[0]+line[1]
+							});
 						}
 					}
 				});
@@ -129,17 +130,17 @@ export class StockService {
               sell3:values[23],sell3Vol:values[24],
               sell4:values[25],sell4Vol:values[26],
               sell5:values[27],sell5Vol:values[28],
-              time:values[30],high:values[33],low:values[34],
+              time:moment(values[30],'YYYYMMDDHHmmss').toDate(),
+							high:values[33],low:values[34],
               amount:parseInt(values[37]),
               turnoverRate:values[38],
 							date
             };
 						procStock(v);
-						
-            if(code==='sh000001' || code.slice(0,5)==='sz399'){
+						if(code==='sh000001' || code.slice(0,5)==='sz399'){
               v.avg='';
             }else{
-              v.avg=(v.amount/v.volume*100).toFixed(2);
+              v.avg=(v.amount/v.volume*100);//.toFixed(2);
             }
 						this._data[code]=Object.assign(this._data[code]||{},v);
           }

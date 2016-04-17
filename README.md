@@ -16,7 +16,7 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](ht
 <img src="resources/screenshots/iphone/search.png" alt="搜索" width="376">
 <img src="resources/screenshots/iphone/menu.png" alt="菜单" width="376">
 
-### TODO
+### TODOS
 
 - [ ] complete charts
 - [ ] modify favorates

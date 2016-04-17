@@ -22,7 +22,13 @@ export class Search {
 		let q=searchBar.value.trim();
 		if(!q) 	return;
 		this.stockService.findStocks(searchBar.value).then(results=>{
-			this.results=results;
+			let favors=this.localData.getFavors();
+			this.results=results.map(x=>{
+				if(favors.indexOf(x.code)>=0){
+					x.added=true;
+				}
+				return x;
+			});
 		});
 	}
 	close(){
@@ -33,6 +39,15 @@ export class Search {
 	}
 	gotoDetail(stock){
 		//this.close();
-		this.nav.push(Detail,{code:stock.city+stock.codeS});
+		this.nav.push(Detail,{code:stock.code});
+	}
+	addToFavors(code,evt){
+		this.localData.addFavor(code).then(()=>{
+			let item=this.results.find(x=>x.code===code);
+			if(item){
+				item.added=true;
+			}
+		});
+		evt.stopPropagation();
 	}
 }

@@ -20,7 +20,7 @@ export class LocalData {
   }
 
   getFavors(){
-    return this._favors;
+		return this._favors;
   }
 	addFavor(code){
 		if(!this._favors.includes(code)){

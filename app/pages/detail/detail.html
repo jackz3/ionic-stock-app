@@ -43,10 +43,10 @@
   	<ion-row>
 			<ion-col width-25 class="stock-cell">
 				<span>均价</span><br />
-				<em>{{stock.open}}</em></ion-col>
+				<em>{{stock.avg?stock.avg.toFixed(2):'-'}}</em></ion-col>
     	<ion-col width-25 class="stock-cell">
 				<span>换手率</span><br />
-				<em>{{stock.turnoverRate}}</em>
+				<em>{{stock.turnoverRate||'-'}}</em>
 			</ion-col>
 			<ion-col width-25 class="stock-cell">
 				<span>成交量</span><br />

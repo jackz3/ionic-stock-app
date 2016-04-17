@@ -1,5 +1,5 @@
 import {ElementRef} from 'angular2/core';
-import {Page,NavParams,NavController,Alert,Modal} from 'ionic-angular';
+import {Page,NavParams,NavController,Alert,Modal,Loading} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';
 import {MenuService} from '../../providers/menu';
@@ -24,12 +24,16 @@ export class Detail {
 		this.menuService=menuService;
 		this.nav=nav;
 		this.code=navParams.get('code');
-    this.timer=0;
-		this.chartTimer=0;
+    this.timer=null;
+		this.chartTimer=null;
 		this.stock={};
 		this.chartType='minutes';
 		this.mChart={};
 		this.elemRef=elemRef;
+		this.showLoading=false;
+		this.loading = Loading.create({
+    	content: '载入中...'
+  	});
 		
 		if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
 			this.showBuySell=false;
@@ -44,7 +48,7 @@ export class Detail {
 	}
 	onPageWillEnter(){
 		this.polling();
-		this.pollingChart(this.chartType);
+		this.renderCharts(this.chartType);
 		this.menuService.buildMenu('detail');
 	}
 	onPageDidEnter(){
@@ -52,6 +56,7 @@ export class Detail {
 	}
 	onPageWillLeave(){
 	  this.clearTimer();
+		this.clearChartTimer();
 	}
 	polling(){
 		if(this.stockService.isOpening()){
@@ -67,19 +72,28 @@ export class Detail {
 			}
 		}
 	}
-	pollingChart(chartType){
-		if(this.stockService.isOpening()){
+	pollingChart(force){
+		if(this.stockService.isOpening()||force){
 			this.stockService.fetchMinutes(this.code).then(()=>{
-					this.renderMinutes();
+				if(force && this.showLoading){
+					this.showLoading=false;
+					this.loading.dismiss();	
+				}
+				this.renderCharts(this.chartType);
 			});
-		}else{
-			this.renderCharts(chartType);			
+			this.chartTimer=setTimeout(this.pollingChart.bind(this),99999);
 		}
 	}
 	clearTimer(){
 	  if(this.timer){
       clearTimeout(this.timer);
     }
+	}
+	clearChartTimer(){
+		if(this.chartTimer){
+			clearTimeout(this.chartTimer);
+			this.chartTimer=null;
+		}
 	}
 	initCanvas(){
 		let wrapper=this.elemRef.nativeElement;
@@ -109,45 +123,93 @@ export class Detail {
 	}
 	renderCharts(chartType){
 		if(chartType==='minutes'){
-				let mins=this.stockService.getMinutes(this.code);
-				if(mins){
-					setTimeout(this.renderMinutes.bind(this),0);
-				}else{
-					this.stockService.fetchMinutes(this.code).then(()=>{
-						this.renderMinutes();
-					});
+			if(!this.chartTimer){
+				this.pollingChart(false);
+			}
+			let mins=this.stockService.getMinutes(this.code);
+			if(mins){
+				setTimeout(this.renderMinutes.bind(this),0);
+			}else{
+				if(!this.showLoading){
+					this.showLoading=true;
+					this.nav.present(this.loading);
 				}
-			}else if(chartType==='days'){
-				let days=this.stockService.getKDays(this.code);
-				if(days){
-					setTimeout(this.renderKChart.bind(this,days),0);
-				}else{
-					this.stockService.fetchKDays(this.code).then(()=>{
-						days=this.stockService.getKDays(this.code);
-						this.renderKChart(days);
-					});
-				}
-			}else if(chartType==='weeks'){
-				let weeks=this.stockService.getKWeeks(this.code);
-				if(weeks){
-					setTimeout(this.renderKChart.bind(this,weeks),0);
-				}else{
-					this.stockService.fetchKWeeks(this.code).then(()=>{
-						weeks=this.stockService.getKWeeks(this.code);
-						this.renderKChart(weeks);
-					});
-				}
-			}else if(chartType==='months'){
-				let months=this.stockService.getKMonths(this.code);
-				if(months){
-					setTimeout(this.renderKChart.bind(this,months),0);
-				}else{
-					this.stockService.fetchKMonths(this.code).then(()=>{
-						months=this.stockService.getKMonths(this.code);
-						this.renderKChart(months);
-					});
+				if(!this.chartTimer){
+					this.pollingChart(true);	
 				}
 			}
+		// }else if(chartType==='days'){
+		// 	this.clearChartTimer();
+		// 		let days=this.stockService.getKDays(this.code);
+		// 		if(days){
+		// 			setTimeout(this.renderKChart.bind(this,days),0);
+		// 		}else{
+		// 			this.stockService.fetchKDays(this.code).then(()=>{
+		// 				days=this.stockService.getKDays(this.code);
+		// 				this.renderKChart(days);
+		// 			});
+		// 		}
+		// }else if(chartType==='weeks'){
+		// 	this.clearChartTimer();
+		// 		let weeks=this.stockService.getKWeeks(this.code);
+		// 		if(weeks){
+		// 			setTimeout(this.renderKChart.bind(this,weeks),0);
+		// 		}else{
+		// 			this.stockService.fetchKWeeks(this.code).then(()=>{
+		// 				weeks=this.stockService.getKWeeks(this.code);
+		// 				this.renderKChart(weeks);
+		// 			});
+		// 		}
+		// }else if(chartType==='months'){
+		// 	this.clearChartTimer();
+		// 		let months=this.stockService.getKMonths(this.code);
+		// 		if(months){
+		// 			setTimeout(this.renderKChart.bind(this,months),0);
+		// 		}else{
+		// 			this.stockService.fetchKMonths(this.code).then(()=>{
+		// 				months=this.stockService.getKMonths(this.code);
+		// 				this.renderKChart(months);
+		// 			});
+		// 		}
+		}else{
+			this.clearChartTimer();
+			let kData=this.getKData(chartType);
+			if(kData){
+				setTimeout(this.renderKChart.bind(this,kData),0);
+			}else{
+				//debugger
+				if(!this.showLoading){
+					this.showLoading=true;
+					this.nav.present(this.loading);
+				}
+				let promise;
+				if(chartType==='days'){
+					promise=this.stockService.fetchKDays(this.code);
+				}else if(chartType==='weeks'){
+					promise=this.stockService.fetchKWeeks(this.code);
+				}else if(chartType==='months'){
+					promise=this.stockService.fetchKMonths(this.code);
+				}
+				promise.then(()=>{
+					//debugger;
+					if(this.showLoading){
+						this.showLoading=false;
+						this.loading.dismiss();	
+					}
+					kData=this.getKData(chartType);
+					this.renderKChart(kData);
+				});
+			}
+		}
+	}
+	getKData(chartType){
+		if(chartType==='days'){
+			return this.stockService.getKDays(this.code);
+		}else if(chartType==='weeks'){
+			return this.stockService.getKWeeks(this.code);
+		}else if(chartType==='months'){
+			return this.stockService.getKMonths(this.code);
+		}
 	}
 	renderKChart(kData){
 		var width=this.mChart.width,
@@ -171,7 +233,18 @@ export class Detail {
     //ctx.lineTo(width/2-0.5,this.mChart.priceHeight-1);
     ctx.strokeStyle='#eee';
     ctx.stroke();
-				
+		
+		let lastIndex=kData.length-1;
+		let time=this.stock.time;
+		if(time.toDateString()===kData[lastIndex].date.toDateString()){
+			if(this.getMinutesIndex(time)!==-1){
+				kData[lastIndex].close=this.stock.close;
+				kData[lastIndex].hight=this.stock.high;
+				kData[lastIndex].low=this.stock.low;
+				kData[lastIndex].volume=this.stock.volume;
+				kData[lastIndex].amount=this.stock.amount;
+			}
+		}
 		var w=this.mChart.width,
 				kNum=Math.floor((w-2)/((4+1)*2+1));
     if(kNum>kData.length){
@@ -288,6 +361,29 @@ export class Detail {
     ctx.lineWidth=1;
     ctx.stroke();
   }
+	getMinutesIndex(time){
+		let h=time.getHours();
+		let m=time.getMinutes();
+		if(h===9 && m>=30){
+			return m-30;
+		}
+		if(h===10){
+			return 30+m;
+		}
+		if(h===11 && m<=30){
+			return 90+m;
+		}
+		if(h===11 && m>30){
+			return 120;
+		}
+		if(h===12){
+			return 120;
+		}
+		if(h>=13 && h<15){
+			return 121+(h-13)*60+m;
+		}
+		return -1;
+	}
 	renderMinutes(){
 		var width=this.mChart.width,
         canvasHeight=this.mChart.height,
@@ -359,22 +455,26 @@ export class Detail {
 			
 			//var cntx=this.bufCanvas.getContext('2d');
       //cntx.clearRect(0,0,this.mChart.width,this.mChart.height);
-      this.drawPriceLine(bufCtx, minData, 'price', 'blue');
-      this.drawPriceLine(bufCtx, minData, 'avg_price', 'grey');
-      this.drawVolumeLine(bufCtx, minData, this.stock.last);
+			let index=this.getMinutesIndex(this.stock.time);
+      this.drawPriceLine(bufCtx, minData, 'price', 'blue',index,this.stock.close);
+      this.drawPriceLine(bufCtx, minData, 'avg_price', 'grey',index,this.stock.avg);
+      this.drawVolumeLine(bufCtx, minData, this.stock.last,index,this.stock.volume);
 			
 			let ctx = this.canvas.getContext("2d");
 			ctx.clearRect(0,0,width,canvasHeight);
       ctx.drawImage(this.bufCanvas,0,0);
 		}
 	}
-	drawPriceLine(ctx,mdata,priceName,color){
+	drawPriceLine(ctx,mdata,priceName,color,index,price){
     var step=this.mChart.spacing,
         x=1+step/2,
         price=mdata[0][priceName],
         max=this.mChart.max,
         range=this.mChart.range,
         height=this.mChart.priceHeight-1;
+		if(index!==-1){
+			mdata[index][priceName]=price;
+		}
     ctx.beginPath();
     ctx.moveTo(x,(max-price)/range*height+0.5);
     for(var i=1;i<242;i++){
@@ -388,7 +488,7 @@ export class Detail {
     ctx.strokeStyle=color;
     ctx.stroke();
   }
-	drawVolumeLine(ctx,mdata,open){
+	drawVolumeLine(ctx,mdata,open,index,volume){
     var step=this.mChart.spacing,
         x=1+step/2,
         max=this.mChart.maxVolume,
@@ -396,7 +496,9 @@ export class Detail {
         canvasHeight=this.mChart.height,
         top=canvasHeight-height,
         lastPrice=open,price,vol,color='';
-    
+    if(index!==-1){
+			mdata[index].volume=volume;
+		}
 		ctx.beginPath();
     ctx.strokeStyle='red';
     for(var i=0;i<242;i++){
@@ -436,6 +538,7 @@ export class Detail {
 	fetchStock(){
     this.stockService.fetchDay([this.code]).then(()=>{
 			this.stock=this.stockService.getStock(this.code);
+			this.renderCharts(this.chartType);
 		});
   }
 	updateChart(){
