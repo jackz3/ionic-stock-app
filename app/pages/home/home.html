@@ -22,7 +22,7 @@
 				<span class="list-name">{{stock.name}}</span>
 			</div>
 			<div class="list-price" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
-				<span>{{stock.close}}</span>
+				<span>{{stock.close.toFixed(2)}}</span>
 			</div>
       <div class="list-percent" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
 				<span>{{stock.percent}}</span><br>

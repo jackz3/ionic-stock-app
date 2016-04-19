@@ -138,10 +138,11 @@ export class StockService {
             };
 						procStock(v);
 						if(code==='sh000001' || code.slice(0,5)==='sz399'){
-              v.avg='';
+						  v.avg=parseFloat(values[35].split('/')[0]);
             }else{
               v.avg=(v.amount/v.volume*100);//.toFixed(2);
             }
+						//debugger
 						this._data[code]=Object.assign(this._data[code]||{},v);
           }
         });
@@ -187,11 +188,12 @@ export class StockService {
       if(minData){
         window.min_data=null;
         let origin=minData.split('\n'),
-						line,mData=[],total=0,price,volume,totalV,totalVolume=0;
+						line,mData=[],total=0,price,
+						volume,totalV,totalVolume=0;
         origin.shift();origin.shift();
         origin.forEach(function(m,i){
-          line=m.split(' ');
-          if(line.length){
+          if(i<242){
+						line=m.split(' ');
             price=parseFloat(line[1]);
             totalV=parseInt(line[2]);
             volume=totalV-totalVolume;
@@ -200,6 +202,7 @@ export class StockService {
             mData.push({price:price,volume:volume,avg_price:total/totalVolume});
           }
         });
+				//debugger
         mData[0].totalVolume=totalVolume;
         if(mData.length<242){
           mData.push({price:-0.001,avg_price:-0.001});

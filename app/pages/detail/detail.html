@@ -13,7 +13,7 @@
 <ion-content class="cards-bg">
 	<ion-card>
 		<ion-row center class="stock-prices" [class.red]="stock.isIncrease" [class.green]="stock.isDecline">
-  		<ion-col width-50 class="detail-close">{{stock.close}}</ion-col>
+  		<ion-col width-50 class="detail-close">{{stock.close?stock.close.toFixed(2):''}}</ion-col>
 			<ion-col width-20 class="detail-percent">
 				<span>{{stock.percent}}</span><br />
 				<span>{{stock.diff|PriceDiff}}</span>
@@ -56,7 +56,7 @@
 				<em>{{stock.amount}}</em></ion-col>
   	</ion-row>
 	</ion-card>
-	<div padding>
+	<div padding class="segment-padding">
   <ion-segment [(ngModel)]="chartType" (change)="updateChart()">
     <ion-segment-button value="minutes">
       分时

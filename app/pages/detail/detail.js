@@ -81,7 +81,12 @@ export class Detail {
 				}
 				this.renderCharts(this.chartType);
 			});
-			this.chartTimer=setTimeout(this.pollingChart.bind(this),99999);
+			let now=new Date();
+			let interval=60-now.getSeconds()+1;
+			if(interval<5){
+				interval=5;
+			}
+			this.chartTimer=setTimeout(this.pollingChart.bind(this),interval*1000);
 		}
 	}
 	clearTimer(){
@@ -130,10 +135,10 @@ export class Detail {
 			if(mins){
 				setTimeout(this.renderMinutes.bind(this),0);
 			}else{
-				if(!this.showLoading){
-					this.showLoading=true;
-					this.nav.present(this.loading);
-				}
+				// if(!this.showLoading){
+				// 	this.showLoading=true;
+				// 	this.nav.present(this.loading);
+				// }
 				if(!this.chartTimer){
 					this.pollingChart(true);	
 				}
@@ -178,10 +183,10 @@ export class Detail {
 				setTimeout(this.renderKChart.bind(this,kData),0);
 			}else{
 				//debugger
-				if(!this.showLoading){
-					this.showLoading=true;
-					this.nav.present(this.loading);
-				}
+				// if(!this.showLoading){
+				// 	this.showLoading=true;
+				// 	this.nav.present(this.loading);
+				// }
 				let promise;
 				if(chartType==='days'){
 					promise=this.stockService.fetchKDays(this.code);
@@ -496,8 +501,8 @@ export class Detail {
         canvasHeight=this.mChart.height,
         top=canvasHeight-height,
         lastPrice=open,price,vol,color='';
-    if(index!==-1){
-			mdata[index].volume=volume;
+		if(index!==-1){
+			mdata[index].volume+=volume-mdata[0].totalVolume;
 		}
 		ctx.beginPath();
     ctx.strokeStyle='red';
