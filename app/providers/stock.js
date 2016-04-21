@@ -192,8 +192,8 @@ export class StockService {
 						volume,totalV,totalVolume=0;
         origin.shift();origin.shift();
         origin.forEach(function(m,i){
-          if(i<242){
-						line=m.split(' ');
+					line=m.split(' ');
+          if(line.length>2){
             price=parseFloat(line[1]);
             totalV=parseInt(line[2]);
             volume=totalV-totalVolume;

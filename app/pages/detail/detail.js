@@ -265,16 +265,14 @@ export class Detail {
     
     var maxVol=kRange.maxVol;
     maxVol=Math.ceil(maxVol/10000)*10000;
-    
-		const padding=3;
+    const padding=3;
 		ctx.fillStyle='#555';
     ctx.textBaseline = "top";
     ctx.textAlign="left";
     ctx.fillText(max.toFixed(2),padding,padding+1);
+		ctx.fillText(maxVol,padding,priceHeight+timeHeight+padding);
 		ctx.textBaseline = "bottom";
-    ctx.textAlign="left";
     ctx.fillText(min.toFixed(2),padding,priceHeight-padding);
-		//$labels.eq(3).text(maxVol);
 		
 		const barWidth=5;
 		var x=1+barWidth+0.5,
@@ -414,11 +412,11 @@ export class Detail {
         bufCtx.fillStyle='#000';
         bufCtx.textBaseline = "top";
         bufCtx.textAlign="left";
-        bufCtx.fillText('9:30',0,priceHeight+1);
+        bufCtx.fillText('9:30',0,priceHeight+3);
         bufCtx.textAlign = "center";
-        bufCtx.fillText('11:30/13:00',width/2,priceHeight+1);
+        bufCtx.fillText('11:30/13:00',width/2,priceHeight+3);
         bufCtx.textAlign='right';
-        bufCtx.fillText('15:00',width,priceHeight+1);
+        bufCtx.fillText('15:00',width,priceHeight+3);
         
     var code=this.code,
         minData=this.stockService.getMinutes(code);
@@ -448,13 +446,12 @@ export class Detail {
 			bufCtx.textAlign="right";
 			bufCtx.fillText(maxPercent.toFixed(2)+'%',width-padding,padding+1);
 			bufCtx.fillStyle='#000';
+			bufCtx.textAlign="left";
+			bufCtx.fillText(maxVol,padding,priceHeight+timeHeight+padding);
 			bufCtx.textBaseline = "bottom";
-      bufCtx.textAlign="left";
-			bufCtx.fillText(last,padding,priceHeight/2-padding);
+			bufCtx.fillText(last,padding,priceHeight/2-padding);    	
 			bufCtx.fillStyle='#00cc00';
-			bufCtx.textBaseline = "bottom";
-      bufCtx.textAlign="left";
-      bufCtx.fillText(min.toFixed(2),padding,priceHeight-padding);
+			bufCtx.fillText(min.toFixed(2),padding,priceHeight-padding);
 			bufCtx.textAlign="right";
       bufCtx.fillText(maxPercent.toFixed(2)+'%',width-padding,priceHeight-padding);
 			
@@ -470,7 +467,7 @@ export class Detail {
       ctx.drawImage(this.bufCanvas,0,0);
 		}
 	}
-	drawPriceLine(ctx,mdata,priceName,color,index,price){
+	drawPriceLine(ctx,mdata,priceName,color,index,newPrice){
     var step=this.mChart.spacing,
         x=1+step/2,
         price=mdata[0][priceName],
@@ -478,11 +475,12 @@ export class Detail {
         range=this.mChart.range,
         height=this.mChart.priceHeight-1;
 		if(index!==-1){
-			mdata[index][priceName]=price;
+			mdata[index][priceName]=newPrice;
 		}
     ctx.beginPath();
     ctx.moveTo(x,(max-price)/range*height+0.5);
-    for(var i=1;i<242;i++){
+		let length=mdata.length;
+    for(var i=1;i<length;i++){
       price=mdata[i][priceName];
       if(price===-0.001){
         break;
@@ -506,7 +504,8 @@ export class Detail {
 		}
 		ctx.beginPath();
     ctx.strokeStyle='red';
-    for(var i=0;i<242;i++){
+		let length=mdata.length;
+    for(var i=0;i<length;i++){
       price=mdata[i].price;
       if(price===-0.001) break;
       if(price>=lastPrice){
@@ -523,7 +522,7 @@ export class Detail {
     x=1+step/2;
     ctx.beginPath();
     ctx.strokeStyle='green';
-    for(i=0;i<242;i++){
+    for(i=0;i<length;i++){
       price=mdata[i].price;
       if(price===-0.001) break;
       if(price<lastPrice){
