@@ -86,6 +86,9 @@ export class Detail {
 			if(interval<5){
 				interval=5;
 			}
+			if(interval>30){
+				interval=30;
+			}
 			this.chartTimer=setTimeout(this.pollingChart.bind(this),interval*1000);
 		}
 	}
@@ -474,7 +477,7 @@ export class Detail {
         max=this.mChart.max,
         range=this.mChart.range,
         height=this.mChart.priceHeight-1;
-		if(index!==-1){
+		if(index!==-1 && index<mdata.length){
 			mdata[index][priceName]=newPrice;
 		}
     ctx.beginPath();
@@ -499,7 +502,7 @@ export class Detail {
         canvasHeight=this.mChart.height,
         top=canvasHeight-height,
         lastPrice=open,price,vol,color='';
-		if(index!==-1){
+		if(index!==-1 && index<mdata.length){
 			mdata[index].volume+=volume-mdata[0].totalVolume;
 		}
 		ctx.beginPath();
