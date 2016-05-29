@@ -15,7 +15,7 @@
 
 <ion-content class="home">
   <ion-list>
-    <ion-item inset *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
+    <ion-item inset *ngFor="let stock of stocks" (click)="gotoDetail(stock)">
 			<ion-label>{{stock.code.slice(2)}}</ion-label>
 			<ion-label>{{stock.name}}</ion-label>
 			<button item-right="" outline="" (click)="onRemove(stock,$event)" class="disable-hover item-button button button-outline-danger">

@@ -16,7 +16,7 @@
 
 <ion-content class="home">
   <ion-list>
-    <ion-item class="list-item" *ngFor="#stock of stocks" (click)="gotoDetail(stock)">
+    <ion-item class="list-item" *ngFor="let stock of stocks" (click)="gotoDetail(stock)">
 			<div>
 				<span class="list-code">{{stock.code.slice(2)}}</span><br>
 				<span class="list-name">{{stock.name}}</span>

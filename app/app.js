@@ -1,3 +1,4 @@
+import {ViewChild} from '@angular/core';
 import {App, IonicApp } from 'ionic-angular';
 import {LocalData} from './providers/local-data';
 import {StockService} from './providers/stock';
@@ -8,6 +9,9 @@ import {Home} from './pages/home/home';
 @App({
   templateUrl: 'build/app.html',
 	providers: [LocalData,StockService,MenuService],
+  queries: {
+    nav: new ViewChild('content')
+  },
   config: {} // http://ionicframework.com/docs/v2/api/config/Config/
 })
 class Yunguba {
@@ -35,12 +39,11 @@ class Yunguba {
     //});
   }
 	gotoPage(page){
-		let nav = this.app.getComponent('nav');
 		if(page.name==='detail'){
-			return nav.push(page.component,{code:page.code});
+			return this.nav.push(page.component,{code:page.code});
 		}
 		//if (page.index) {
-      nav.setRoot(page.component, {tabIndex: page.index,type:page.type});
+      this.nav.setRoot(page.component, {tabIndex: page.index,type:page.type});
     //} else {
       //nav.setRoot(page.component);
     //}

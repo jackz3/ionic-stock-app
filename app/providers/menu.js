@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Home} from '../pages/home/home';
 import {About} from '../pages/about/about';
 import {Detail} from '../pages/detail/detail';

@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/core';
-import {Http} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
 import {default as moment } from 'moment';//'../../node_modules/moment/moment';
 
 export const CLOSE_INCREASE='CLOSE_INCREASE';

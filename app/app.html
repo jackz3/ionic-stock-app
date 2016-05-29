@@ -10,7 +10,7 @@
       <ion-list-header>
         主菜单
       </ion-list-header>
-      <button ion-item menuClose *ngFor="#p of pages" (click)="gotoPage(p)">
+      <button ion-item menuClose *ngFor="let p of pages" (click)="gotoPage(p)">
         <!--<ion-icon item-left [name]="p.icon"></ion-icon>-->
         {{p.title}}
       </button>

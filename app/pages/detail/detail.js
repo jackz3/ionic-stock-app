@@ -1,4 +1,4 @@
-import {ElementRef} from 'angular2/core';
+import {ElementRef} from '@angular/core';
 import {Page,NavParams,NavController,Alert,Modal,Loading} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService} from '../../providers/stock';

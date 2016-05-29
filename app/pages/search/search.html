@@ -8,7 +8,7 @@
 	hideCancelButton={false} (cancel)="clear($event)"></ion-searchbar>
 <ion-content>
 	<ion-list>
-    <ion-item *ngFor="#item of results" (click)="gotoDetail(item)">
+    <ion-item *ngFor="let item of results" (click)="gotoDetail(item)">
 			<ion-label>{{item.codeS}}</ion-label>
 			<ion-label>{{item.name}}</ion-label>
 			<button *ngIf="!item.added" item-right="" outline="" (click)="addToFavors(item.code,$event)" class="disable-hover item-button button button-outline">
