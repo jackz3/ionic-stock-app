@@ -11,10 +11,10 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](ht
 
 ### Screen Shots
 
-<img src="resources/screenshots/iphone/favors.png" alt="自选股" width="376">
-<img src="resources/screenshots/iphone/detail.png" alt="详细" width="376">
-<img src="resources/screenshots/iphone/search.png" alt="搜索" width="376">
-<img src="resources/screenshots/iphone/menu.png" alt="菜单" width="376">
+<img src="resources/screenshots/favors.png" alt="自选股" width="376">
+<img src="resources/screenshots/detail.png" alt="详细" width="376">
+<img src="resources/screenshots/search.png" alt="搜索" width="376">
+<img src="resources/screenshots/menu.png" alt="菜单" width="376">
 
 ### TODOS
 
