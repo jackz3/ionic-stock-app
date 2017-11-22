@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/merge'
 import 'rxjs/add/operator/filter'
 import 'rxjs/add/operator/switchMap'
+import 'rxjs/add/operator/retry'
 import { interval } from 'rxjs/observable/interval';
 import { Subscription } from 'rxjs/Subscription';
 import { timer } from 'rxjs/observable/timer';
@@ -54,14 +55,14 @@ export class HomePage {
 		}).switchMap(x=>this.stockService
 											.fetchDay(this.codes)
 											.then(()=>this.stockService.getStocks(this.codes))
-		).subscribe(stocks=>this.stocks=stocks)
+			).retry().subscribe(stocks=>this.stocks=stocks)
 		}else if(this.type==='boards'){
 			this.subscription=timer(0,INTERVAL).filter(x=>{
 				if(x===0){
 					return true
 				}
 				return isOpening()
-			}).switchMap(x=>this.stockService.fetchRankings(this.segment))
+			}).switchMap(x=>this.stockService.fetchRankings(this.segment)).retry()
 				.subscribe(x=>this.stocks=x)
 		}
 	}
@@ -89,6 +90,7 @@ export class HomePage {
     modal.present()
 	}
 	updateSeg(){
+		console.log(this.segment)
 		this.stockService.fetchRankings(this.segment)
 					.then(x=>this.stocks=x)
 	}
