@@ -1,4 +1,4 @@
-import { Component, Inject, forwardRef } from '@angular/core'
+import { Component } from '@angular/core'
 import {NavController,ViewController, NavParams} from 'ionic-angular'
 import {LocalData} from '../../providers/local-data'
 import {StockService} from '../../providers/stock'

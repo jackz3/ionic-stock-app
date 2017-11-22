@@ -1,4 +1,4 @@
-import { Component, Inject, ForwardRefFn, forwardRef } from '@angular/core';
+import { Component } from '@angular/core';
 import {NavController,NavParams,ModalController,LoadingController} from 'ionic-angular'
 import {LocalData} from '../../providers/local-data'
 import {StockService,isOpening} from '../../providers/stock'

@@ -33,7 +33,6 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "@angular-devkit/build-optimizer": "0.0.32",
     "@ionic/app-scripts": "3.0.1",
     "typescript": "2.3.4"
   },

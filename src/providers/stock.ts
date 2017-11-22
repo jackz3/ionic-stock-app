@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'moment'
 import { Observable } from 'rxjs/Observable'
-import { timer } from 'rxjs/observable/timer'
 import { fromPromise } from 'rxjs/observable/fromPromise'
-import {takeWhile} from 'rxjs/operator/takeWhile'
 
 declare global {
   interface Window {
