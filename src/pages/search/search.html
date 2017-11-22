@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>
+      查找股票
+    </ion-title>
+    <ion-buttons end>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar no-border-top>
+    <ion-searchbar placeholder="请输入股票代码、文字或拼音" [(ngModel)]="q" (ionInput)="find()"
+      showCancelButton={true} (ionCancel)="clear()"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="outer-content">
+  <ion-list>
+    <ion-item *ngFor="let item of results" (click)="gotoDetail(item)">
+          <ion-label>{{item.codeS}}</ion-label>
+          <ion-label>{{item.name}}</ion-label>
+          <button *ngIf="!item.added" item-right="" outline="" (click)="addToFavors(item.code,$event)" class="disable-hover item-button button button-outline">
+            <span class="button-inner">加入自选股</span>
+          </button>
+          <button *ngIf="item.added" disabled item-right="" outline="" class="disable-hover item-button button button-outline-secondary">
+            <span class="button-inner">已加自选股</span>
+          </button>
+    </ion-item>
+  </ion-list>
+
+  <!-- <ion-list>
+    <ion-list-header>Tracks</ion-list-header>
+    <ion-item *ngFor="let track of tracks" [attr.track]="track.name | lowercase">
+      <span item-start class="dot"></span>
+      <ion-label>{{track.name}}</ion-label>
+      <ion-toggle [(ngModel)]="track.isChecked" color="secondary"></ion-toggle>
+    </ion-item>
+  </ion-list> -->
+</ion-content>

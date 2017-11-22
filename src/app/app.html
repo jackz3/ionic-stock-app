@@ -1,0 +1,32 @@
+<ion-split-pane>
+	<ion-menu [content]="content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>ionic股市行情</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="outer-content">
+      <ion-list>
+        <ion-list-header>
+          主菜单
+        </ion-list-header>
+        <button ion-item menuClose (click)="gotoPage(pages[0])">
+          <ion-icon item-left [name]="pages[0].icon" [color]="isActive(pages[0])"></ion-icon>
+          自选股
+        </button>
+        <ng-container *ngIf="isActive({name:'DetailsPage'})">
+          <button ion-item menuClose *ngFor="let s of stocks" (click)="gotoPage(s)">
+            <ion-icon item-left [name]="isDetailsActive(s)" color="primary"></ion-icon>
+            {{s.title}}
+          </button>
+        </ng-container>
+        <button ion-item menuClose *ngFor="let p of pages.slice(1)" (click)="gotoPage(p)">
+          <ion-icon item-left [name]="p.icon" [color]="isActive(p)"></ion-icon>
+          {{p.title}}
+        </button>
+      </ion-list>
+    </ion-content>
+	</ion-menu>
+
+	<ion-nav id="nav" [root]="root" #content swipe-back-enabled="false" main></ion-nav>
+</ion-split-pane>

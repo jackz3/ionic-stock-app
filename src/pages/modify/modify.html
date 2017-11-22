@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar no-border-bottom>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>自选股管理</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="showSearchBar()">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content class="home">
+  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" side="start">
+    <ion-item inset *ngFor="let stock of stocks" (click)="gotoDetail(stock)">
+      <ion-label>{{stock.code.slice(2)}}</ion-label>
+      <ion-label>{{stock.name}}</ion-label>
+      <button ion-button color="danger" outline item-end (click)="onRemove(stock,$event)">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+</ion-content>

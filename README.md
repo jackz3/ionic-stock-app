@@ -1,9 +1,9 @@
-# yunguba-ionic
+# ionic-stock-app
 A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](http://yunguba.duapp.com)
 
 ### Getting Started
 
-1. `npm install -g cordova ionic@beta`
+1. `npm install -g ionic`
 2. git clone , cd repo dir
 3. `npm install`
 4. `ionic serve`
@@ -19,11 +19,8 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](ht
 ### TODOS
 
 - [ ] complete charts
-- [ ] modify favorates
 - [ ] bundle
-- [x] loading indicator
-- [ ] url router
+- [ ] loading indicator
 - [ ] stock detail finance info (F10)
 - [ ] unit tests
-- [ ] pad/tablet style
 - [ ] pull to refresh
