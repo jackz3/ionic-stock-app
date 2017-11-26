@@ -675,10 +675,10 @@ export class DetailsPage {
     this.y.domain([0, d3Array.max(StatsBarChart, (d) => d.frequency)]);
 	}
 	drawAxis() {
-		this.svg.append("g")
+		this.g.append("g")
 						.attr("transform", "translate(0," + this.lineHeight + ")")
 						.call(d3Axis.axisBottom(this.xScale))
-		this.svg.append("g")
+		this.g.append("g")
 						.call(d3Axis.axisLeft(this.yScale))
 		.append("text")
 		.attr("class", "axis-title")
@@ -705,7 +705,7 @@ export class DetailsPage {
 		this.line = d3Shape.line()
 											.x( (d:any) => this.x(d.date) )
 											.y( (d:any) => this.y(d.value) )
-		this.svg.append("path")
+		this.g.append("path")
 						.data(StatsLineChart)
 		//.attr("class", "line")
 						.attr("d", this.line);
