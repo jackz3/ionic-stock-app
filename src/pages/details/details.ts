@@ -155,8 +155,8 @@ const MINS_INTERVAL=30000
 })
 export class DetailsPage {
 	initSvg(){
-		debugger
-		this.svg = d3.select("#barChart")
+		const dom=document.getElementById('barChart')
+		this.svg = d3.select(this.chartRef.nativeElement)
 								.append("svg")
 								.attr("width", '100%')
 								.attr("height", '100%')
@@ -246,6 +246,7 @@ export class DetailsPage {
   svg: any;
 	g: any;
 	line: d3Shape.Line<[number, number]>
+		@ViewChild('stockChart') 	chartRef: ElementRef
 
   constructor(
 		private localData:LocalData,
@@ -253,8 +254,7 @@ export class DetailsPage {
     private navParams:NavParams,
     private nav:NavController,
     private modalCtrl: ModalController,
-		private alertCtrl: AlertController,
-		@ViewChild('stockChart') private	chartRef: ElementRef
+		private alertCtrl: AlertController
   ){
 		this.code=navParams.get('code');
 		// this.loading = Loading.create({
@@ -278,7 +278,7 @@ export class DetailsPage {
   }
 	ionViewDidLoad(){
 		//setTimeout(this.initCanvas.bind(this),0)
-		//this.initSvg()
+		this.initSvg()
     // this.initAxis();
     // this.drawAxis();
 		// this.drawBars();
@@ -309,11 +309,11 @@ export class DetailsPage {
 		console.log('enter')
 
 		setTimeout(()=>{
-			this.initSvg()
+			//this.initSvg()
 			this.initAxis()
 			this.drawAxis()
 			this.drawBars()
-		},1000)
+		},500)
 		//this.initAxis();
     //this.drawAxis();
     //this.drawBars();
