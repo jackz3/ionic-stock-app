@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {NavController,NavParams,ModalController,LoadingController,AlertController,reorderArray} from 'ionic-angular'
+import {NavController,ModalController,LoadingController,AlertController,reorderArray} from 'ionic-angular'
 import {LocalData} from '../../providers/local-data'
 import {StockService} from '../../providers/stock';
 //import {Detail} from '../detail/detail';
@@ -16,7 +16,7 @@ export class ModifyPage {
     private stockService:StockService,
     // @Inject(forwardRef(() => MenuService))
     // private menuService:MenuService,
-    private nav:NavController,
+    //private nav:NavController,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController){
   }

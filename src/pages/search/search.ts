@@ -16,7 +16,7 @@ export class SearchPage {
     private navParams:NavParams,
 		private viewCtrl:ViewController
 	){
-		this.nav=navParams.get('nav')
+		this.nav=this.navParams.get('nav')
 		this.localData
 				.getFavors()
 				.subscribe(codes=>this.codes=codes)

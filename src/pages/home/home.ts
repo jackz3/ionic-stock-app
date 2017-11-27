@@ -39,7 +39,7 @@ export class HomePage {
 		private loading:LoadingController,
 		private modalCtrl: ModalController
 	){
-		this.type=navParams.get('type')||'favors'
+		this.type=this.navParams.get('type')||'favors'
   }
 	ionViewWillEnter(){
 		if(this.type==='favors'){
