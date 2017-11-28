@@ -10,6 +10,7 @@ import * as d3Scale from "d3-scale";
 import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 import * as d3Shape from "d3-shape"
+import * as d3Time from 'd3-time'
 //import {StockCharts} from './charts';
 
 interface Frequency {
@@ -276,12 +277,15 @@ export class DetailsPage {
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
 	}
-	initAxis() {
+	initMinsAxis() {
 		this.priceScale=d3Scale.scaleLinear()
 													.domain([0,d3Array.max(this.mData,(d)=>d.price)])
 		this.volumeScale=d3Scale.scaleLinear()
 														.domain([0,d3Array.max(this.mData,d=>d.volume)])
-
+		this.timeScale=d3Scale.scaleTime()
+													.domain([new Date(2000,1,1,9,30),new Date(2000,1,1,11,30)])
+													.ticks(d3Time.timeMinute.every(1))
+													
 		this.xScale = d3Scale.scaleTime().range([0, this.width]);
     this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
     this.xScale.domain(d3Array.extent(StatsLineChart, (d) => d.date ));
@@ -319,7 +323,7 @@ export class DetailsPage {
 
 		setTimeout(()=>{
 			//this.initSvg()
-			this.initAxis()
+			this.initMinsAxis()
 			this.drawAxis()
 			this.drawBars()
 		},500)
