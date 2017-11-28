@@ -154,16 +154,6 @@ const MINS_INTERVAL=30000
 //	directives: [StockCharts]
 })
 export class DetailsPage {
-	initSvg(){
-		const dom=document.getElementById('barChart')
-		this.svg = d3.select(this.chartRef.nativeElement)
-								.append("svg")
-								.attr("width", '100%')
-								.attr("height", '100%')
-								.attr('viewBox','0 0 1080 600')
-		this.g = this.svg.append("g")
-										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
-	}
 	initAxis() {
 		this.xScale = d3Scale.scaleTime().range([0, this.width]);
     this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
@@ -246,7 +236,8 @@ export class DetailsPage {
   svg: any;
 	g: any;
 	line: d3Shape.Line<[number, number]>
-		@ViewChild('stockChart') 	chartRef: ElementRef
+	@ViewChild('stockChart') chartRef: ElementRef
+	mData=[]
 
   constructor(
 		private localData:LocalData,
@@ -273,8 +264,8 @@ export class DetailsPage {
 
 		this.width = 1080 - this.margin.left - this.margin.right
 		this.height = 500 - this.margin.top - this.margin.bottom
-		this.barHeight=this.height*0.3
-		this.lineHeight=this.height*0.6
+		this.barHeight=this.height*0.2
+		this.lineHeight=this.height*0.7
   }
 	ionViewDidLoad(){
 		//setTimeout(this.initCanvas.bind(this),0)
@@ -282,11 +273,17 @@ export class DetailsPage {
     // this.initAxis();
     // this.drawAxis();
 		// this.drawBars();
-		console.log('load')
+	}
+	initSvg(){
+		this.svg = d3.select(this.chartRef.nativeElement)
+								.append("svg")
+								.attr("width", '100%')
+								.attr("height", '100%')
+								.attr('viewBox','0 0 1080 500')
+		this.g = this.svg.append("g")
+										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
 	}
 	ngAfterViewInit(){
-		console.log('init')
-		//this.initSvg()
 	}
 	ionViewWillEnter(){
 		this.stockSubscription=timer(0,PRICE_INTERVAL).filter(x=>{
@@ -303,7 +300,9 @@ export class DetailsPage {
 		//this.renderCharts(this.chartType);
 		this.minsSubscription=timer(0,MINS_INTERVAL)
 														.switchMap(x=>this.stockService.fetchMinutes(this.code))
-														.subscribe()
+														.subscribe(()=>{
+
+														})
 	}
 	ionViewDidEnter(){
 		console.log('enter')
@@ -351,7 +350,7 @@ export class DetailsPage {
 		}
 	}
 	initCanvas(){
-		let wrapper=this.canvasRef.nativeElement
+		let wrapper//=this.canvasRef.nativeElement
 		let width=wrapper.clientWidth;
 		console.log(width)
     let canvasHeight=this.mChart.height=width*0.625,
