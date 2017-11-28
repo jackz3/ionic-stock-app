@@ -154,17 +154,7 @@ const MINS_INTERVAL=30000
 //	directives: [StockCharts]
 })
 export class DetailsPage {
-	initAxis() {
-		this.xScale = d3Scale.scaleTime().range([0, this.width]);
-    this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
-    this.xScale.domain(d3Array.extent(StatsLineChart, (d) => d.date ));
-		this.yScale.domain(d3Array.extent(StatsLineChart, (d) => d.value ));
-
-    this.x = d3Scale.scaleBand().rangeRound([0, this.width]).padding(0.1);
-    this.y = d3Scale.scaleLinear().rangeRound([this.barHeight, 0]);
-    this.x.domain(StatsBarChart.map((d) => d.letter))
-    this.y.domain([0, d3Array.max(StatsBarChart, (d) => d.frequency)]);
-	}
+	
 	drawAxis() {
 		this.g.append("g")
 						.attr("transform", "translate(0," + this.lineHeight + ")")
@@ -238,6 +228,9 @@ export class DetailsPage {
 	line: d3Shape.Line<[number, number]>
 	@ViewChild('stockChart') chartRef: ElementRef
 	mData=[]
+	priceScale:any
+	volumeScale
+	timeScale
 
   constructor(
 		private localData:LocalData,
@@ -283,8 +276,23 @@ export class DetailsPage {
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
 	}
-	ngAfterViewInit(){
+	initAxis() {
+		this.priceScale=d3Scale.scaleLinear()
+													.domain([0,d3Array.max(this.mData,(d)=>d.price)])
+		this.volumeScale=d3Scale.scaleLinear()
+														.domain([0,d3Array.max(this.mData,d=>d.volume)])
+
+		this.xScale = d3Scale.scaleTime().range([0, this.width]);
+    this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
+    this.xScale.domain(d3Array.extent(StatsLineChart, (d) => d.date ));
+		this.yScale.domain(d3Array.extent(StatsLineChart, (d) => d.value ));
+
+    this.x = d3Scale.scaleBand().rangeRound([0, this.width]).padding(0.1);
+    this.y = d3Scale.scaleLinear().rangeRound([this.barHeight, 0]);
+    this.x.domain(StatsBarChart.map((d) => d.letter))
+    this.y.domain([0, d3Array.max(StatsBarChart, (d) => d.frequency)]);
 	}
+
 	ionViewWillEnter(){
 		this.stockSubscription=timer(0,PRICE_INTERVAL).filter(x=>{
 			if(x===0){
@@ -299,9 +307,11 @@ export class DetailsPage {
 		})
 		//this.renderCharts(this.chartType);
 		this.minsSubscription=timer(0,MINS_INTERVAL)
-														.switchMap(x=>this.stockService.fetchMinutes(this.code))
-														.subscribe(()=>{
-
+														.switchMap(x=>this.stockService
+																							.fetchMinutes(this.code)
+																							.then(()=>this.stockService.getMinutes(this.code)))
+														.subscribe((mData)=>{
+															this.mData=mData
 														})
 	}
 	ionViewDidEnter(){
