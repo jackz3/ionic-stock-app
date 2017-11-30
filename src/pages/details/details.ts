@@ -282,9 +282,10 @@ export class DetailsPage {
 													.domain([0,d3Array.max(this.mData,(d)=>d.price)])
 		this.volumeScale=d3Scale.scaleLinear()
 														.domain([0,d3Array.max(this.mData,d=>d.volume)])
-		this.timeScale=d3Scale.scaleTime()
-													.domain([new Date(2000,1,1,9,30),new Date(2000,1,1,11,30)])
-													.ticks(d3Time.timeMinute.every(1))
+		this.timeScale=d3Scale.scaleBand()
+													.domain(this.mData.map(d=>d.time))
+													.range()
+													//.ticks(d3Time.timeMinute.every(1))
 
 		this.xScale = d3Scale.scaleTime().range([0, this.width]);
     this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
@@ -316,7 +317,6 @@ export class DetailsPage {
 																							.then(()=>this.stockService.getMinutes(this.code)))
 														.subscribe((mData)=>{
 															this.mData=mData
-															console.log(mData)
 															this.initMinsAxis()
 															this.drawAxis()
 															this.drawBars()
