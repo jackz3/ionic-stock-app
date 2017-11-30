@@ -156,33 +156,6 @@ const MINS_INTERVAL=30000
 })
 export class DetailsPage {
 
-	drawAxis() {
-		this.g.append("g")
-						.attr("transform", "translate(0," + this.lineHeight + ")")
-						.call(d3Axis.axisBottom(this.xScale))
-		this.g.append("g")
-						.call(d3Axis.axisLeft(this.yScale))
-		.append("text")
-		.attr("class", "axis-title")
-		.attr("transform", "rotate(-90)")
-		.attr("y", 6)
-		.attr("dy", ".71em")
-		.style("text-anchor", "end")
-		.text("Price ($)");
-
-    this.g.append("g")
-        .attr("transform", `translate(0,${this.height})`)
-        .call(d3Axis.axisBottom(this.x))
-		this.g.append("g")
-				.attr('transform',`translate(0,${this.height-this.barHeight})`)
-        .call(d3Axis.axisLeft(this.y))
-				// .append("text")
-        // .attr("transform", "rotate(-90)")
-        // .attr("y", 6)
-        // .attr("dy", "0.71em")
-        // .attr("text-anchor", "end")
-        // .text("Frequency")
-	}
 	drawBars() {
 		this.line = d3Shape.line()
 											.x( (d:any) => this.xScale(d.date) )
@@ -284,7 +257,7 @@ export class DetailsPage {
 														.domain([0,d3Array.max(this.mData,d=>d.volume)])
 		this.timeScale=d3Scale.scaleBand()
 													.domain(this.mData.map(d=>d.time))
-													.range()
+													.rangeRound([0, this.width]).padding(0.1)
 													//.ticks(d3Time.timeMinute.every(1))
 
 		this.xScale = d3Scale.scaleTime().range([0, this.width]);
@@ -298,6 +271,33 @@ export class DetailsPage {
     this.y.domain([0, d3Array.max(StatsBarChart, (d) => d.frequency)]);
 	}
 
+	drawAxis() {
+		this.g.append("g")
+						.attr("transform", "translate(0," + this.lineHeight + ")")
+						.call(d3Axis.axisBottom(this.xScale))
+		this.g.append("g")
+						.call(d3Axis.axisLeft(this.yScale))
+		// .append("text")
+		// .attr("class", "axis-title")
+		// .attr("transform", "rotate(-90)")
+		// .attr("y", 6)
+		// .attr("dy", ".71em")
+		// .style("text-anchor", "end")
+		// .text("Price ($)");
+
+    this.g.append("g")
+        .attr("transform", `translate(0,${this.height})`)
+        .call(d3Axis.axisBottom(this.x))
+		this.g.append("g")
+				.attr('transform',`translate(0,${this.height-this.barHeight})`)
+        .call(d3Axis.axisLeft(this.y))
+				// .append("text")
+        // .attr("transform", "rotate(-90)")
+        // .attr("y", 6)
+        // .attr("dy", "0.71em")
+        // .attr("text-anchor", "end")
+        // .text("Frequency")
+	}
 	ionViewWillEnter(){
 		this.stockSubscription=timer(0,PRICE_INTERVAL).filter(x=>{
 			if(x===0){
