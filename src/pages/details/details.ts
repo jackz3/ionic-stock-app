@@ -155,7 +155,7 @@ const MINS_INTERVAL=30000
 //	directives: [StockCharts]
 })
 export class DetailsPage {
-	
+
 	drawAxis() {
 		this.g.append("g")
 						.attr("transform", "translate(0," + this.lineHeight + ")")
@@ -285,7 +285,7 @@ export class DetailsPage {
 		this.timeScale=d3Scale.scaleTime()
 													.domain([new Date(2000,1,1,9,30),new Date(2000,1,1,11,30)])
 													.ticks(d3Time.timeMinute.every(1))
-													
+
 		this.xScale = d3Scale.scaleTime().range([0, this.width]);
     this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
     this.xScale.domain(d3Array.extent(StatsLineChart, (d) => d.date ));
@@ -316,6 +316,10 @@ export class DetailsPage {
 																							.then(()=>this.stockService.getMinutes(this.code)))
 														.subscribe((mData)=>{
 															this.mData=mData
+															console.log(mData)
+															this.initMinsAxis()
+															this.drawAxis()
+															this.drawBars()
 														})
 	}
 	ionViewDidEnter(){
@@ -323,9 +327,9 @@ export class DetailsPage {
 
 		setTimeout(()=>{
 			//this.initSvg()
-			this.initMinsAxis()
-			this.drawAxis()
-			this.drawBars()
+			//this.initMinsAxis()
+			//this.drawAxis()
+			//this.drawBars()
 		},500)
 		//this.initAxis();
     //this.drawAxis();
