@@ -218,18 +218,23 @@ export class StockService {
       if(minData){
         window.min_data=null;
         let origin=minData.split('\n'),
-						line,mData=[],total=0,price,
-						volume,totalV,totalVolume=0;
-        origin.shift();origin.shift();
+						line,mData=[],total=0,time,price,
+						volume,totalV,totalVolume=0
+        origin.shift()
+        origin.shift()
         origin.forEach(function(m,i){
 					line=m.split(' ');
           if(line.length>2){
+            time=line[0]
             price=parseFloat(line[1]);
             totalV=parseInt(line[2]);
             volume=totalV-totalVolume;
             totalVolume=totalV;
             total+=price*volume;
-            mData.push({price:price,volume:volume,avg_price:total/totalVolume});
+            mData.push({
+              time,price,volume,
+              avg_price:total/totalVolume
+            })
           }
         });
 				//debugger

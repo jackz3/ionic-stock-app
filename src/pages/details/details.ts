@@ -13,140 +13,6 @@ import * as d3Shape from "d3-shape"
 import * as d3Time from 'd3-time'
 //import {StockCharts} from './charts';
 
-interface Frequency {
-	letter: string,
-	frequency: number
-}
-
-const StatsBarChart: Frequency[] = [
-	{letter: "A", frequency: .08167},
-	{letter: "B", frequency: .01492},
-	{letter: "C", frequency: .02782},
-	{letter: "D", frequency: .04253},
-	{letter: "E", frequency: .12702},
-	{letter: "F", frequency: .02288},
-	{letter: "G", frequency: .02015},
-	{letter: "H", frequency: .06094},
-	{letter: "I", frequency: .06966},
-	{letter: "J", frequency: .00153},
-	{letter: "K", frequency: .00772},
-];
-interface Stock {
-	date: Date,
-	value: number
-}
-const StatsLineChart: Stock[] = [
-	{date: new Date("2011-11-23"), value: 366.99},
-	{date: new Date("2011-11-25"), value: 363.57},
-	{date: new Date("2011-11-28"), value: 376.12},
-	{date: new Date("2011-11-29"), value: 373.20},
-	{date: new Date("2011-11-30"), value: 382.20},
-	{date: new Date("2011-12-01"), value: 387.93},
-	{date: new Date("2011-12-02"), value: 389.70},
-	{date: new Date("2011-12-05"), value: 393.01},
-	{date: new Date("2011-12-06"), value: 390.95},
-	{date: new Date("2011-12-07"), value: 389.09},
-	{date: new Date("2011-12-08"), value: 390.66},
-	{date: new Date("2011-12-09"), value: 393.62},
-	{date: new Date("2011-12-12"), value: 391.84},
-	{date: new Date("2011-12-13"), value: 388.81},
-	{date: new Date("2011-12-14"), value: 380.19},
-	{date: new Date("2011-12-15"), value: 378.94},
-	{date: new Date("2011-12-16"), value: 381.02},
-	{date: new Date("2011-12-19"), value: 382.21},
-	{date: new Date("2011-12-20"), value: 395.95},
-	{date: new Date("2011-12-21"), value: 396.44},
-	{date: new Date("2011-12-22"), value: 398.55},
-	{date: new Date("2011-12-23"), value: 403.43},
-	{date: new Date("2011-12-27"), value: 406.53},
-	{date: new Date("2011-12-28"), value: 402.64},
-	{date: new Date("2011-12-29"), value: 405.12},
-	{date: new Date("2011-12-30"), value: 405.00},
-	{date: new Date("2012-01-03"), value: 411.23},
-	{date: new Date("2012-01-04"), value: 413.44},
-	{date: new Date("2012-01-05"), value: 418.03},
-	{date: new Date("2012-01-06"), value: 422.40},
-	{date: new Date("2012-01-09"), value: 421.73},
-	{date: new Date("2012-01-10"), value: 423.24},
-	{date: new Date("2012-01-11"), value: 422.55},
-	{date: new Date("2012-01-12"), value: 421.39},
-	{date: new Date("2012-01-13"), value: 419.81},
-	{date: new Date("2012-01-17"), value: 424.70},
-	{date: new Date("2012-01-18"), value: 429.11},
-	{date: new Date("2012-01-19"), value: 427.75},
-	{date: new Date("2012-01-20"), value: 420.30},
-	{date: new Date("2012-01-23"), value: 427.41},
-	{date: new Date("2012-01-24"), value: 420.41},
-	{date: new Date("2012-01-25"), value: 446.66},
-	{date: new Date("2012-01-26"), value: 444.63},
-	{date: new Date("2012-01-27"), value: 447.28},
-	{date: new Date("2012-01-30"), value: 453.01},
-	{date: new Date("2012-01-31"), value: 456.48},
-	{date: new Date("2012-02-01"), value: 456.19},
-	{date: new Date("2012-02-02"), value: 455.12},
-	{date: new Date("2012-02-03"), value: 459.68},
-	{date: new Date("2012-02-06"), value: 463.97},
-	{date: new Date("2012-02-07"), value: 468.83},
-	{date: new Date("2012-02-08"), value: 476.68},
-	{date: new Date("2012-02-09"), value: 493.17},
-	{date: new Date("2012-02-10"), value: 493.42},
-	{date: new Date("2012-02-13"), value: 502.60},
-	{date: new Date("2012-02-14"), value: 509.46},
-	{date: new Date("2012-02-15"), value: 497.67},
-	{date: new Date("2012-02-16"), value: 502.21},
-	{date: new Date("2012-02-17"), value: 502.12},
-	{date: new Date("2012-02-21"), value: 514.85},
-	{date: new Date("2012-02-22"), value: 513.04},
-	{date: new Date("2012-02-23"), value: 516.39},
-	{date: new Date("2012-02-24"), value: 522.41},
-	{date: new Date("2012-02-27"), value: 525.76},
-	{date: new Date("2012-02-28"), value: 535.41},
-	{date: new Date("2012-02-29"), value: 542.44},
-	{date: new Date("2012-03-01"), value: 544.47},
-	{date: new Date("2012-03-02"), value: 545.18},
-	{date: new Date("2012-03-05"), value: 533.16},
-	{date: new Date("2012-03-06"), value: 530.26},
-	{date: new Date("2012-03-07"), value: 530.69},
-	{date: new Date("2012-03-08"), value: 541.99},
-	{date: new Date("2012-03-09"), value: 545.17},
-	{date: new Date("2012-03-12"), value: 552.00},
-	{date: new Date("2012-03-13"), value: 568.10},
-	{date: new Date("2012-03-14"), value: 589.58},
-	{date: new Date("2012-03-15"), value: 585.56},
-	{date: new Date("2012-03-16"), value: 585.57},
-	{date: new Date("2012-03-19"), value: 601.10},
-	{date: new Date("2012-03-20"), value: 605.96},
-	{date: new Date("2012-03-21"), value: 602.50},
-	{date: new Date("2012-03-22"), value: 599.34},
-	{date: new Date("2012-03-23"), value: 596.05},
-	{date: new Date("2012-03-26"), value: 606.98},
-	{date: new Date("2012-03-27"), value: 614.48},
-	{date: new Date("2012-03-28"), value: 617.62},
-	{date: new Date("2012-03-29"), value: 609.86},
-	{date: new Date("2012-03-30"), value: 599.55},
-	{date: new Date("2012-04-02"), value: 618.63},
-	{date: new Date("2012-04-03"), value: 629.32},
-	{date: new Date("2012-04-04"), value: 624.31},
-	{date: new Date("2012-04-05"), value: 633.68},
-	{date: new Date("2012-04-09"), value: 636.23},
-	{date: new Date("2012-04-10"), value: 628.44},
-	{date: new Date("2012-04-11"), value: 626.20},
-	{date: new Date("2012-04-12"), value: 622.77},
-	{date: new Date("2012-04-13"), value: 605.23},
-	{date: new Date("2012-04-16"), value: 580.13},
-	{date: new Date("2012-04-17"), value: 609.70},
-	{date: new Date("2012-04-18"), value: 608.34},
-	{date: new Date("2012-04-19"), value: 587.44},
-	{date: new Date("2012-04-20"), value: 572.98},
-	{date: new Date("2012-04-23"), value: 571.70},
-	{date: new Date("2012-04-24"), value: 560.28},
-	{date: new Date("2012-04-25"), value: 610.00},
-	{date: new Date("2012-04-26"), value: 607.70},
-	{date: new Date("2012-04-27"), value: 603.00},
-	{date: new Date("2012-04-30"), value: 583.98},
-	{date: new Date("2012-05-01"), value: 582.13},
-]
-
 const PRICE_INTERVAL=5000
 const MINS_INTERVAL=30000
 
@@ -155,25 +21,6 @@ const MINS_INTERVAL=30000
 //	directives: [StockCharts]
 })
 export class DetailsPage {
-
-	drawBars() {
-		this.line = d3Shape.line()
-											.x( (d:any) => this.xScale(d.date) )
-											.y( (d:any) => this.yScale(d.value) )
-		this.g.append("path")
-					.datum(StatsLineChart)
-		//.attr("class", "line")
-					.attr("d", this.line);
-
-    this.g.selectAll(".bar")
-        .data(StatsBarChart)
-        .enter().append("rect")
-        .attr("x", (d) => this.x(d.letter) )
-        .attr("y", (d) => this.height-this.barHeight+this.y(d.frequency) )
-        .attr("width", this.x.bandwidth())
-        .attr("height", (d) => this.barHeight - this.y(d.frequency) );
-  }
-
   code:string
   chartTimer:number=null
   stock:any={}
@@ -190,16 +37,19 @@ export class DetailsPage {
 	//@ViewChild('myMap') myMap
 	width: number
 	height: number
-	barHeight:number
-	lineHeight:number
-	margin = {top: 20, right: 20, bottom: 30, left: 40}
+	volumeHeight:number
+	priceHeight:number
+	timeHeight:number=50
+	volumeTop:number
+	margin = {top: 10, right: 0, bottom: 8, left: 0}
 	xScale:any
 	yScale:any
   x: any;
   y: any;
   svg: any;
 	g: any;
-	line: d3Shape.Line<[number, number]>
+	priceLine: d3Shape.Line<[number, number]>
+	avgLine:d3Shape.Line<[number,number]>
 	@ViewChild('stockChart') chartRef: ElementRef
 	mData=[]
 	priceScale:any
@@ -231,15 +81,14 @@ export class DetailsPage {
 
 		this.width = 1080 - this.margin.left - this.margin.right
 		this.height = 500 - this.margin.top - this.margin.bottom
-		this.barHeight=this.height*0.2
-		this.lineHeight=this.height*0.7
+		this.priceHeight=this.height*0.7
+		this.volumeTop=this.priceHeight+50
+		this.volumeHeight=this.height-this.volumeTop
   }
 	ionViewDidLoad(){
 		//setTimeout(this.initCanvas.bind(this),0)
 		this.initSvg()
-    // this.initAxis();
-    // this.drawAxis();
-		// this.drawBars();
+		this.initMinsAxis()
 	}
 	initSvg(){
 		this.svg = d3.select(this.chartRef.nativeElement)
@@ -252,59 +101,68 @@ export class DetailsPage {
 	}
 	initMinsAxis() {
 		this.priceScale=d3Scale.scaleLinear()
-													.domain([0,d3Array.max(this.mData,(d)=>d.price)])
+													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
-														.domain([0,d3Array.max(this.mData,d=>d.volume)])
+														.range([this.volumeHeight, 0])
 		this.timeScale=d3Scale.scaleBand()
-													.domain(this.mData.map(d=>d.time))
-													.rangeRound([0, this.width]).padding(0.1)
-													//.ticks(d3Time.timeMinute.every(1))
+													.range([0, this.width])
+													//.padding(0.1)
+		
+		this.g.append("g")
+					.attr('class','price-axis')
+		this.g.append('g')
+					.attr('class','time-axis')
+					.attr("transform", `translate(0,${this.priceHeight})`)
+		this.g.append("g")
+					.attr('class','volume-axis')
+					.attr('transform',`translate(0,${this.priceHeight+50})`)
+					
+		this.priceLine = d3Shape.line()
+														.x( (d:any) => this.timeScale(d.time) )
+														.y( (d:any) => this.priceScale(d.price) )
+		this.g.append('path')
+					.attr('class','price-line line')
 
-		this.xScale = d3Scale.scaleTime().range([0, this.width]);
-    this.yScale = d3Scale.scaleLinear().range([this.lineHeight, 0]);
-    this.xScale.domain(d3Array.extent(StatsLineChart, (d) => d.date ));
-		this.yScale.domain(d3Array.extent(StatsLineChart, (d) => d.value ));
-
-    this.x = d3Scale.scaleBand().rangeRound([0, this.width]).padding(0.1);
-    this.y = d3Scale.scaleLinear().rangeRound([this.barHeight, 0]);
-    this.x.domain(StatsBarChart.map((d) => d.letter))
-    this.y.domain([0, d3Array.max(StatsBarChart, (d) => d.frequency)]);
 	}
+	updateMinsChart(){
+		this.priceScale.domain(d3Array.extent(this.mData,(d)=>d.price))
+		this.timeScale.domain(this.mData.map(d=>d.time))
+		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
 
-	drawAxis() {
-		this.g.append("g")
-						.attr("transform", "translate(0," + this.lineHeight + ")")
-						.call(d3Axis.axisBottom(this.xScale))
-		this.g.append("g")
-						.call(d3Axis.axisLeft(this.yScale))
-		// .append("text")
-		// .attr("class", "axis-title")
-		// .attr("transform", "rotate(-90)")
-		// .attr("y", 6)
-		// .attr("dy", ".71em")
-		// .style("text-anchor", "end")
-		// .text("Price ($)");
+		const priceAxis=this.g.select('.price-axis')
+					.call(d3Axis.axisRight(this.priceScale).ticks(3))
+		priceAxis.selectAll('line')
+						.attr('x2',6)
+		priceAxis.selectAll('text')
+						.attr("x", 24)
 
-    this.g.append("g")
-        .attr("transform", `translate(0,${this.height})`)
-        .call(d3Axis.axisBottom(this.x))
-		this.g.append("g")
-				.attr('transform',`translate(0,${this.height-this.barHeight})`)
-        .call(d3Axis.axisLeft(this.y))
-				// .append("text")
-        // .attr("transform", "rotate(-90)")
-        // .attr("y", 6)
-        // .attr("dy", "0.71em")
-        // .attr("text-anchor", "end")
-        // .text("Frequency")
+		this.g.select('.time-axis')
+					.call(d3Axis.axisBottom(this.timeScale).tickValues(['0930','1500']))
+
+		const volumeAxis=this.g.select('.volume-axis')
+													.call(d3Axis.axisLeft(this.volumeScale).ticks(2))
+		volumeAxis.selectAll('line')
+							.attr('x2',6)
+		volumeAxis.selectAll('text')
+							.attr('x',24)
+console.log(this.mData)
+		this.g.select('.price-line')
+		//			.datum(StatsLineChart)
+					.attr('d', this.priceLine(this.mData))
+
+    this.g.selectAll(".bar")
+         	.data(this.mData)
+				 	.enter()
+				 	.append("rect")
+         	.attr("x", (d) => this.timeScale(d.time) )
+         	.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
+         	.attr("width", this.timeScale.bandwidth())
+         	.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
 	}
 	ionViewWillEnter(){
-		this.stockSubscription=timer(0,PRICE_INTERVAL).filter(x=>{
-			if(x===0){
-				return true
-			}
-			return isOpening()
-		}).switchMap(x=>this.stockService
+		this.stockSubscription=timer(0,PRICE_INTERVAL)
+													.filter(x=>x===0 || isOpening())
+													.switchMap(x=>this.stockService
 													.fetchDay([this.code])
 													.then(()=>this.stockService.getStock(this.code))
 		).subscribe(stock=>{
@@ -312,28 +170,18 @@ export class DetailsPage {
 		})
 		//this.renderCharts(this.chartType);
 		this.minsSubscription=timer(0,MINS_INTERVAL)
-														.switchMap(x=>this.stockService
-																							.fetchMinutes(this.code)
-																							.then(()=>this.stockService.getMinutes(this.code)))
-														.subscribe((mData)=>{
+													.filter(x=>x===0 || isOpening())
+													.switchMap(x=>this.stockService
+																						.fetchMinutes(this.code)
+																						.then(()=>this.stockService.getMinutes(this.code)))
+													.subscribe((mData)=>{
 															this.mData=mData
-															this.initMinsAxis()
-															this.drawAxis()
-															this.drawBars()
-														})
+															this.updateMinsChart()
+													})
 	}
 	ionViewDidEnter(){
 		console.log('enter')
 
-		setTimeout(()=>{
-			//this.initSvg()
-			//this.initMinsAxis()
-			//this.drawAxis()
-			//this.drawBars()
-		},500)
-		//this.initAxis();
-    //this.drawAxis();
-    //this.drawBars();
 	}
 	ionViewWillLeave(){
 		this.stockSubscription.unsubscribe()
