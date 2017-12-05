@@ -13,6 +13,7 @@ import 'rxjs/add/operator/retry'
 import { interval } from 'rxjs/observable/interval';
 import { Subscription } from 'rxjs/Subscription';
 import { timer } from 'rxjs/observable/timer';
+import { Loading } from 'ionic-angular/components/loading/loading';
 
 const INTERVAL=8000
 
@@ -30,18 +31,26 @@ export class HomePage {
 	segment = 'INCREASE'
 	codes:string[]=[]
 	subscription:Subscription
+	loading:Loading
 
   constructor(
 		private localData:LocalData,
 		private stockService:StockService,
 		private nav:NavController,
 		private navParams:NavParams,
-		private loading:LoadingController,
+		private loadingCtrl:LoadingController,
 		private modalCtrl: ModalController
 	){
 		this.type=this.navParams.get('type')||'favors'
+		this.loading = this.loadingCtrl.create({ 
+			 content: '载入中...'
+		})
+		
   }
 	ionViewWillEnter(){
+		this.loading.present()
+		let firstLoad=true
+
 		if(this.type==='favors'){
 			this.subscription=Observable.merge(
 			this.localData.getFavors(),
@@ -55,7 +64,14 @@ export class HomePage {
 		}).switchMap(x=>this.stockService
 											.fetchDay(this.codes)
 											.then(()=>this.stockService.getStocks(this.codes))
-			).retry().subscribe(stocks=>this.stocks=stocks)
+			).retry()
+			.subscribe(stocks=>{
+				if(firstLoad){
+					firstLoad=false
+					this.loading.dismiss()
+				}
+				this.stocks=stocks
+			})
 		}else if(this.type==='boards'){
 			this.subscription=timer(0,INTERVAL).filter(x=>{
 				if(x===0){

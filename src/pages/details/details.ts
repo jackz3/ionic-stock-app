@@ -11,6 +11,7 @@ import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 import * as d3Shape from "d3-shape"
 import * as d3Time from 'd3-time'
+import { Loading } from 'ionic-angular/components/loading/loading';
 //import {StockCharts} from './charts';
 
 const PRICE_INTERVAL=5000
@@ -21,7 +22,8 @@ const MINS_INTERVAL=30000
 //	directives: [StockCharts]
 })
 export class DetailsPage {
-  code:string
+	code:string
+	loading:Loading
   chartTimer:number=null
   stock:any={}
   chartType:string='minutes'
@@ -39,9 +41,9 @@ export class DetailsPage {
 	height: number
 	volumeHeight:number
 	priceHeight:number
-	timeHeight:number=50
+	timeHeight:number=40
 	volumeTop:number
-	margin = {top: 10, right: 0, bottom: 8, left: 0}
+	margin = {top: 8, right: 0, bottom: 0, left: 0}
 	xScale:any
 	yScale:any
   x: any;
@@ -62,12 +64,13 @@ export class DetailsPage {
     private navParams:NavParams,
     private nav:NavController,
     private modalCtrl: ModalController,
-		private alertCtrl: AlertController
+		private alertCtrl: AlertController,
+		private loadingCtrl:LoadingController
   ){
 		this.code=navParams.get('code');
-		// this.loading = Loading.create({
-    // 	content: '载入中...'
-  	// });
+		this.loading = loadingCtrl.create({
+    	content: '载入中...'
+  	})
 		if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
 			this.showBuySell=false;
 		}else{
@@ -118,26 +121,48 @@ export class DetailsPage {
 					.attr('transform',`translate(0,${this.priceHeight+50})`)
 					
 		this.priceLine = d3Shape.line()
-														.x( (d:any) => this.timeScale(d.time) )
+														.x( (d:any,idx) => this.timeScale(idx) )
 														.y( (d:any) => this.priceScale(d.price) )
 		this.g.append('path')
 					.attr('class','price-line line')
 
 	}
 	updateMinsChart(){
-		this.priceScale.domain(d3Array.extent(this.mData,(d)=>d.price))
-		this.timeScale.domain(this.mData.map(d=>d.time))
+		const {last}=this.stock
+		let priceRange:any[]=d3Array.extent(this.mData,(d)=>d.price)
+		let maxPriceRange=Math.max(...priceRange.map(price=>Math.abs(price-last)))
+		let maxPercentage=Math.ceil(maxPriceRange*100 /last)
+		if(maxPercentage>10){
+			maxPercentage=10
+		}else{
+			maxPriceRange=last*(maxPercentage/100)
+		}
+		priceRange=[last-maxPriceRange,last+maxPriceRange]
+		this.priceScale.domain(priceRange)
+		this.timeScale.domain(Array(242).fill(0).map((x,i)=>i))//this.mData.map(d=>d.time))
 		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
 
 		const priceAxis=this.g.select('.price-axis')
-					.call(d3Axis.axisRight(this.priceScale).ticks(3))
-		priceAxis.selectAll('line')
-						.attr('x2',6)
-		priceAxis.selectAll('text')
-						.attr("x", 24)
-
+					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
+					.call(this.alignPriceLabel)
+		// priceAxis.selectAll('line')
+		// 				.attr('x2',6)
+		// priceAxis.selectAll('text')
+		// 				.attr("x", 24)
 		this.g.select('.time-axis')
-					.call(d3Axis.axisBottom(this.timeScale).tickValues(['0930','1500']))
+					.call(d3Axis.axisBottom(this.timeScale)
+											.tickValues([0,120,241])
+											.tickFormat(d=>{
+												switch(d){
+													case 0:
+														return '9:30'
+													case 120:
+														return '11:30|13:00'
+													case 241:
+														return '15:00'
+												}
+											}))
+					.call(this.alignTimeLabel)
 
 		const volumeAxis=this.g.select('.volume-axis')
 													.call(d3Axis.axisLeft(this.volumeScale).ticks(2))
@@ -150,33 +175,62 @@ console.log(this.mData)
 		//			.datum(StatsLineChart)
 					.attr('d', this.priceLine(this.mData))
 
-    this.g.selectAll(".bar")
-         	.data(this.mData)
-				 	.enter()
-				 	.append("rect")
-         	.attr("x", (d) => this.timeScale(d.time) )
-         	.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
-         	.attr("width", this.timeScale.bandwidth())
-         	.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
+    const volumeBars=this.g.selectAll(".bar")
+         									.data(this.mData)
+		volumeBars.enter()
+							.append("rect")
+							.attr('class','bar')
+							.merge(volumeBars) 
+         			.attr("x", (d,i) => this.timeScale(i) )
+         			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
+         			.attr("width", this.timeScale.bandwidth())
+							.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
+		//volumeBars.exit().remove()
+	}
+	alignPriceLabel(selection){
+		selection.selectAll('.tick text')
+						.each((d,i,all)=>{
+							switch(i){
+								case 0:
+									return d3.select(all[0]).attr('alignment-baseline','after-edge')
+								case 1:
+									return d3.select(all[1]).attr('alignment-baseline','hanging')
+							}
+						})
+	}
+	alignTimeLabel(selection){
+			selection.selectAll('.tick text')
+							.each((d,i,all)=>{
+								switch(d){
+									case 0:
+										return d3.select(all[i]).attr('text-anchor','start')
+									case 241:
+										d3.select(all[i]).attr('text-anchor','end')
+								}
+							})
 	}
 	ionViewWillEnter(){
 		this.stockSubscription=timer(0,PRICE_INTERVAL)
 													.filter(x=>x===0 || isOpening())
 													.switchMap(x=>this.stockService
-													.fetchDay([this.code])
-													.then(()=>this.stockService.getStock(this.code))
-		).subscribe(stock=>{
-			this.stock=stock
-		})
-		//this.renderCharts(this.chartType);
-		this.minsSubscription=timer(0,MINS_INTERVAL)
-													.filter(x=>x===0 || isOpening())
-													.switchMap(x=>this.stockService
+																						.fetchDay([this.code])
+																						.then(()=>this.stockService.getStock(this.code))
+													)
+													.retry()
+													.subscribe(stock=>{
+														this.stock=stock
+														
+														this.minsSubscription=timer(0,MINS_INTERVAL)
+																									.filter(x=>x===0 || isOpening())
+																									.switchMap(x=>this.stockService
 																						.fetchMinutes(this.code)
 																						.then(()=>this.stockService.getMinutes(this.code)))
+													.retry()
 													.subscribe((mData)=>{
 															this.mData=mData
 															this.updateMinsChart()
+													})
+
 													})
 	}
 	ionViewDidEnter(){

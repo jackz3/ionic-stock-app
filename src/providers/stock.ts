@@ -239,9 +239,9 @@ export class StockService {
         });
 				//debugger
         mData[0].totalVolume=totalVolume;
-        if(mData.length<242){
-          mData.push({price:-0.001,avg_price:-0.001});
-        }
+        // if(mData.length<242){
+        //   mData.push({price:-0.001,avg_price:-0.001});
+        // }
         this._data['m_'+code]=mData;
       }
     });
