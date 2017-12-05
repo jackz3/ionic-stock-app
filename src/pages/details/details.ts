@@ -181,6 +181,15 @@ console.log(this.mData)
 							.append("rect")
 							.attr('class','bar')
 							.merge(volumeBars) 
+							.attr('fill',d=>{
+								if(d.price>last){
+									return 'red'
+								}else if(d.price<last){
+									return 'green'
+								}else{
+									return 'black'
+								}
+							})
          			.attr("x", (d,i) => this.timeScale(i) )
          			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
          			.attr("width", this.timeScale.bandwidth())
