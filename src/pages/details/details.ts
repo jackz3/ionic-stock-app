@@ -12,6 +12,8 @@ import * as d3Axis from "d3-axis";
 import * as d3Shape from "d3-shape"
 import * as d3Time from 'd3-time'
 import { Loading } from 'ionic-angular/components/loading/loading';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/from'
 //import {StockCharts} from './charts';
 
 const PRICE_INTERVAL=5000
@@ -26,7 +28,8 @@ export class DetailsPage {
 	loading:Loading
   chartTimer:number=null
   stock:any={}
-  chartType:string='minutes'
+	chartType:string='minutes'
+	curChart=''
   mChart:any={}
   showLoading:boolean=false
   showBuySell:boolean
@@ -35,7 +38,7 @@ export class DetailsPage {
 	bufCanvas:any
 	favors:string[]=[]
 	stockSubscription:Subscription
-	minsSubscription:Subscription
+	chartSubscription:Subscription
 	//@ViewChild('myMap') myMap
 	width: number
 	height: number
@@ -54,6 +57,7 @@ export class DetailsPage {
 	avgLine:d3Shape.Line<[number,number]>
 	@ViewChild('stockChart') chartRef: ElementRef
 	mData=[]
+	kData=[]
 	priceScale:any
 	volumeScale
 	timeScale
@@ -103,6 +107,7 @@ export class DetailsPage {
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
 	}
 	initMinsAxis() {
+		this.g.html(null)
 		this.priceScale=d3Scale.scaleLinear()
 													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
@@ -141,6 +146,37 @@ export class DetailsPage {
 					.attr('y1',this.priceHeight/2)
 					.attr('x2',this.width)
 					.attr('y2',this.priceHeight/2)
+		this.curChart='mins'
+	}
+	initCandleAxis(){
+		this.g.html(null)
+		this.priceScale=d3Scale.scaleLinear()
+													.range([this.priceHeight, 0])
+		this.volumeScale=d3Scale.scaleLinear()
+														.range([this.volumeHeight, 0])
+														.nice()
+		this.timeScale=d3Scale.scaleBand()
+													.range([0, this.width])
+													.padding(0.2)
+
+		this.g.append("g")
+					.attr('class','price-axis')
+		this.g.append('g')
+					.attr('class','time-axis')
+					.attr("transform", `translate(0,${this.priceHeight})`)
+		this.g.append("g")
+					.attr('class','volume-axis')
+					.attr('transform',`translate(0,${this.volumeTop})`)
+		this.g.append('g')
+					.attr('class','volume-time-axis')
+					.attr('transform',`translate(0,${this.height})`)
+
+		this.priceLine = d3Shape.line()
+														.x( (d:any,idx) => this.timeScale(idx) )
+														.y( (d:any) => this.priceScale(d.price) )
+		this.g.append('path')
+					.attr('class','price-line line')
+		this.curChart='candles'
 	}
 	updateMinsChart(){
 		const {last}=this.stock
@@ -166,13 +202,13 @@ export class DetailsPage {
 		// 				.attr("x", 24)
 		this.g.select('.time-axis')
 					.call(d3Axis.axisBottom(this.timeScale)
-											.tickValues([0,120,241])
+											.tickValues([0,241])
 											.tickFormat(d=>{
 												switch(d){
 													case 0:
 														return '9:30'
-													case 120:
-														return '11:30|13:00'
+													case 121:
+														return '11:30/13:00'
 													case 241:
 														return '15:00'
 												}
@@ -246,8 +282,8 @@ console.log(this.mData)
 													.subscribe(stock=>{
 														this.stock=stock
 														if(this.chartType==='minutes'){
-														this.minsSubscription=timer(0,MINS_INTERVAL)
-																									.filter(x=>x===0 || isOpening())
+															this.chartSubscription=timer(0,MINS_INTERVAL)
+																									.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
 																									.switchMap(x=>this.stockService
 																									.fetchMinutes(this.code)
 																									.then(()=>this.stockService.getMinutes(this.code)))
@@ -258,7 +294,7 @@ console.log(this.mData)
 																									})
 														}
 														if(this.chartType==='days'){
-
+															
 														}
 													})
 	}
@@ -268,9 +304,22 @@ console.log(this.mData)
 	}
 	ionViewWillLeave(){
 		this.stockSubscription.unsubscribe()
-		this.minsSubscription.unsubscribe()
+		this.chartSubscription.unsubscribe()
 	  //this.clearTimer();
 		this.clearChartTimer()
+	}
+	showChart(){
+		if(this.chartType==='days'){
+			debugger
+			this.chartSubscription=Observable.from(this.stockService
+																								.fetchKDays(this.code)
+																								.then(()=>this.stockService.getKDays(this.code))
+																			)
+																			.retry()
+																			.subscribe(data=>{
+																				this.kData=data
+																			})
+		}
 	}
 	pollingChart(force){
 		if(this.stockService.isOpening()||force){
@@ -733,7 +782,13 @@ console.log(this.mData)
     ctx.stroke();
   }
 	updateChart(){
-		this.renderCharts(this.chartType)
+		this.chartSubscription.unsubscribe()
+		if(this.chartType==='minutes' && this.curChart!=='mins'){
+			this.initMinsAxis()
+		}else if(this.chartType!=='minutes' && this.curChart!=='candles'){
+			this.initCandleAxis()
+		}
+		this.showChart()
 	}
 	showSearchBar(){
 		const modal = this.modalCtrl.create(SearchPage,{nav:this.nav})
