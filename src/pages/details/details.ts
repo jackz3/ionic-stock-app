@@ -43,7 +43,7 @@ export class DetailsPage {
 	priceHeight:number
 	timeHeight:number=40
 	volumeTop:number
-	margin = {top: 8, right: 0, bottom: 0, left: 0}
+	margin = {top: 5, right: 0, bottom: 0, left: 0}
 	xScale:any
 	yScale:any
   x: any;
@@ -85,7 +85,7 @@ export class DetailsPage {
 		this.width = 1080 - this.margin.left - this.margin.right
 		this.height = 500 - this.margin.top - this.margin.bottom
 		this.priceHeight=this.height*0.7
-		this.volumeTop=this.priceHeight+50
+		this.volumeTop=this.priceHeight+this.timeHeight
 		this.volumeHeight=this.height-this.volumeTop
   }
 	ionViewDidLoad(){
@@ -107,10 +107,11 @@ export class DetailsPage {
 													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
 														.range([this.volumeHeight, 0])
+														.nice()
 		this.timeScale=d3Scale.scaleBand()
 													.range([0, this.width])
 													//.padding(0.1)
-		
+
 		this.g.append("g")
 					.attr('class','price-axis')
 		this.g.append('g')
@@ -118,14 +119,28 @@ export class DetailsPage {
 					.attr("transform", `translate(0,${this.priceHeight})`)
 		this.g.append("g")
 					.attr('class','volume-axis')
-					.attr('transform',`translate(0,${this.priceHeight+50})`)
-					
+					.attr('transform',`translate(0,${this.volumeTop})`)
+		this.g.append('g')
+					.attr('class','volume-time-axis')
+					.attr('transform',`translate(0,${this.height})`)
+
 		this.priceLine = d3Shape.line()
 														.x( (d:any,idx) => this.timeScale(idx) )
 														.y( (d:any) => this.priceScale(d.price) )
 		this.g.append('path')
 					.attr('class','price-line line')
-
+		this.g.append('line')
+					.attr('class','v-line')
+					.attr('x1',this.width/2)
+					.attr('y1',0)
+					.attr('x2',this.width/2)
+					.attr('y2',this.priceHeight)
+		this.g.append('line')
+					.attr('class','h-line')
+					.attr('x1',0)
+					.attr('y1',this.priceHeight/2)
+					.attr('x2',this.width)
+					.attr('y2',this.priceHeight/2)
 	}
 	updateMinsChart(){
 		const {last}=this.stock
@@ -163,6 +178,8 @@ export class DetailsPage {
 												}
 											}))
 					.call(this.alignTimeLabel)
+		this.g.select('.volume-time-axis')
+					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
 													.call(d3Axis.axisLeft(this.volumeScale).ticks(2))
@@ -180,7 +197,7 @@ console.log(this.mData)
 		volumeBars.enter()
 							.append("rect")
 							.attr('class','bar')
-							.merge(volumeBars) 
+							.merge(volumeBars)
 							.attr('fill',d=>{
 								if(d.price>last){
 									return 'red'
@@ -228,18 +245,21 @@ console.log(this.mData)
 													.retry()
 													.subscribe(stock=>{
 														this.stock=stock
-														
+														if(this.chartType==='minutes'){
 														this.minsSubscription=timer(0,MINS_INTERVAL)
 																									.filter(x=>x===0 || isOpening())
 																									.switchMap(x=>this.stockService
-																						.fetchMinutes(this.code)
-																						.then(()=>this.stockService.getMinutes(this.code)))
-													.retry()
-													.subscribe((mData)=>{
-															this.mData=mData
-															this.updateMinsChart()
-													})
+																									.fetchMinutes(this.code)
+																									.then(()=>this.stockService.getMinutes(this.code)))
+																									.retry()
+																									.subscribe((mData)=>{
+																										this.mData=mData
+																										this.updateMinsChart()
+																									})
+														}
+														if(this.chartType==='days'){
 
+														}
 													})
 	}
 	ionViewDidEnter(){
