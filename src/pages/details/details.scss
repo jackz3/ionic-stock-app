@@ -50,8 +50,13 @@ ion-content.details-bg {
 .chart-wrapper{
 	background-color: #fff;
 }
+.mins-line{
+	stroke:darkblue;
+}
+.avg-line{
+	stroke: grey;
+}
 .price-line{
-	stroke:grey;
 	stroke-width: 1px;
 	fill:none;
 }

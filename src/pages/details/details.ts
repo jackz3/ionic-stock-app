@@ -105,6 +105,12 @@ export class DetailsPage {
 								.attr('viewBox','0 0 1080 500')
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
+		this.priceLine = d3Shape.line()
+														.x( (d:any,idx) => this.timeScale(idx) )
+														.y( (d:any) => this.priceScale(d.price) )
+		this.avgLine=d3Shape.line()
+												.x((d:any,idx)=>this.timeScale(idx))
+												.y((d:any)=>this.priceScale(d.avg_price))
 	}
 	initMinsAxis() {
 		this.g.html(null)
@@ -129,11 +135,10 @@ export class DetailsPage {
 					.attr('class','volume-time-axis')
 					.attr('transform',`translate(0,${this.height})`)
 
-		this.priceLine = d3Shape.line()
-														.x( (d:any,idx) => this.timeScale(idx) )
-														.y( (d:any) => this.priceScale(d.price) )
 		this.g.append('path')
-					.attr('class','price-line line')
+					.attr('class','mins-line price-line')
+		this.g.append('path')
+					.attr('class','avg-line price-line')
 		this.g.append('line')
 					.attr('class','v-line')
 					.attr('x1',this.width/2)
@@ -171,12 +176,31 @@ export class DetailsPage {
 					.attr('class','volume-time-axis')
 					.attr('transform',`translate(0,${this.height})`)
 
-		this.priceLine = d3Shape.line()
-														.x( (d:any,idx) => this.timeScale(idx) )
-														.y( (d:any) => this.priceScale(d.price) )
 		this.g.append('path')
-					.attr('class','price-line line')
+					.attr('class','ma-line')
 		this.curChart='candles'
+	}
+	updateCandleChart(){
+		const {last}=this.stock
+		console.log(this.kData)
+		return
+		let priceRange:any[]=d3Array.extent(this.mData,(d)=>d.price)
+		let maxPriceRange=Math.max(...priceRange.map(price=>Math.abs(price-last)))
+		let maxPercentage=Math.ceil(maxPriceRange*100 /last)
+		if(maxPercentage>10){
+			maxPercentage=10
+		}else{
+			maxPriceRange=last*(maxPercentage/100)
+		}
+		priceRange=[last-maxPriceRange,last+maxPriceRange]
+		this.priceScale.domain(priceRange)
+		this.timeScale.domain(Array(242).fill(0).map((x,i)=>i))//this.mData.map(d=>d.time))
+		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
+
+		const priceAxis=this.g.select('.price-axis')
+					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
+					.call(this.alignPriceLabel)
+
 	}
 	updateMinsChart(){
 		const {last}=this.stock
@@ -218,15 +242,13 @@ export class DetailsPage {
 					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
-													.call(d3Axis.axisLeft(this.volumeScale).ticks(2))
-		volumeAxis.selectAll('line')
-							.attr('x2',6)
-		volumeAxis.selectAll('text')
-							.attr('x',24)
-console.log(this.mData)
+													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
+
 		this.g.select('.price-line')
 		//			.datum(StatsLineChart)
 					.attr('d', this.priceLine(this.mData))
+		this.g.select('.avg-line')
+					.attr('d',this.avgLine(this.mData))
 
     const volumeBars=this.g.selectAll(".bar")
          									.data(this.mData)
@@ -281,23 +303,10 @@ console.log(this.mData)
 													.retry()
 													.subscribe(stock=>{
 														this.stock=stock
-														if(this.chartType==='minutes'){
-															this.chartSubscription=timer(0,MINS_INTERVAL)
-																									.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
-																									.switchMap(x=>this.stockService
-																									.fetchMinutes(this.code)
-																									.then(()=>this.stockService.getMinutes(this.code)))
-																									.retry()
-																									.subscribe((mData)=>{
-																										this.mData=mData
-																										this.updateMinsChart()
-																									})
-														}
-														if(this.chartType==='days'){
-															
-														}
+														this.showChart()
 													})
 	}
+
 	ionViewDidEnter(){
 		console.log('enter')
 
@@ -309,8 +318,19 @@ console.log(this.mData)
 		this.clearChartTimer()
 	}
 	showChart(){
+		if(this.chartType==='minutes'){
+			this.chartSubscription=timer(0,MINS_INTERVAL)
+															.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
+															.switchMap(x=>this.stockService
+															.fetchMinutes(this.code)
+															.then(()=>this.stockService.getMinutes(this.code)))
+															.retry()
+															.subscribe((mData)=>{
+																this.mData=mData
+																this.updateMinsChart()
+															})
+		}
 		if(this.chartType==='days'){
-			debugger
 			this.chartSubscription=Observable.from(this.stockService
 																								.fetchKDays(this.code)
 																								.then(()=>this.stockService.getKDays(this.code))
@@ -318,6 +338,7 @@ console.log(this.mData)
 																			.retry()
 																			.subscribe(data=>{
 																				this.kData=data
+																				this.updateCandleChart()
 																			})
 		}
 	}
