@@ -63,7 +63,7 @@
       </ion-grid>
     </ion-card>
     <div padding class="segment-padding">
-    <ion-segment [(ngModel)]="chartType" (change)="updateChart()">
+    <ion-segment [(ngModel)]="chartType" (ionChange)="updateChart()">
       <ion-segment-button value="minutes">
         分时
       </ion-segment-button>

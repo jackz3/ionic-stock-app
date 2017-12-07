@@ -12,6 +12,8 @@ import * as d3Axis from "d3-axis";
 import * as d3Shape from "d3-shape"
 import * as d3Time from 'd3-time'
 import { Loading } from 'ionic-angular/components/loading/loading';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/from'
 //import {StockCharts} from './charts';
 
 const PRICE_INTERVAL=5000
@@ -26,7 +28,8 @@ export class DetailsPage {
 	loading:Loading
   chartTimer:number=null
   stock:any={}
-  chartType:string='minutes'
+	chartType:string='minutes'
+	curChart=''
   mChart:any={}
   showLoading:boolean=false
   showBuySell:boolean
@@ -35,7 +38,7 @@ export class DetailsPage {
 	bufCanvas:any
 	favors:string[]=[]
 	stockSubscription:Subscription
-	minsSubscription:Subscription
+	chartSubscription:Subscription
 	//@ViewChild('myMap') myMap
 	width: number
 	height: number
@@ -54,6 +57,7 @@ export class DetailsPage {
 	avgLine:d3Shape.Line<[number,number]>
 	@ViewChild('stockChart') chartRef: ElementRef
 	mData=[]
+	kData=[]
 	priceScale:any
 	volumeScale
 	timeScale
@@ -101,8 +105,15 @@ export class DetailsPage {
 								.attr('viewBox','0 0 1080 500')
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
+		this.priceLine = d3Shape.line()
+														.x( (d:any,idx) => this.timeScale(idx) )
+														.y( (d:any) => this.priceScale(d.price) )
+		this.avgLine=d3Shape.line()
+												.x((d:any,idx)=>this.timeScale(idx))
+												.y((d:any)=>this.priceScale(d.avg_price))
 	}
 	initMinsAxis() {
+		this.g.html(null)
 		this.priceScale=d3Scale.scaleLinear()
 													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
@@ -124,11 +135,10 @@ export class DetailsPage {
 					.attr('class','volume-time-axis')
 					.attr('transform',`translate(0,${this.height})`)
 
-		this.priceLine = d3Shape.line()
-														.x( (d:any,idx) => this.timeScale(idx) )
-														.y( (d:any) => this.priceScale(d.price) )
 		this.g.append('path')
-					.attr('class','price-line line')
+					.attr('class','mins-line price-line')
+		this.g.append('path')
+					.attr('class','avg-line price-line')
 		this.g.append('line')
 					.attr('class','v-line')
 					.attr('x1',this.width/2)
@@ -141,6 +151,56 @@ export class DetailsPage {
 					.attr('y1',this.priceHeight/2)
 					.attr('x2',this.width)
 					.attr('y2',this.priceHeight/2)
+		this.curChart='mins'
+	}
+	initCandleAxis(){
+		this.g.html(null)
+		this.priceScale=d3Scale.scaleLinear()
+													.range([this.priceHeight, 0])
+		this.volumeScale=d3Scale.scaleLinear()
+														.range([this.volumeHeight, 0])
+														.nice()
+		this.timeScale=d3Scale.scaleBand()
+													.range([0, this.width])
+													.padding(0.2)
+
+		this.g.append("g")
+					.attr('class','price-axis')
+		this.g.append('g')
+					.attr('class','time-axis')
+					.attr("transform", `translate(0,${this.priceHeight})`)
+		this.g.append("g")
+					.attr('class','volume-axis')
+					.attr('transform',`translate(0,${this.volumeTop})`)
+		this.g.append('g')
+					.attr('class','volume-time-axis')
+					.attr('transform',`translate(0,${this.height})`)
+
+		this.g.append('path')
+					.attr('class','ma-line')
+		this.curChart='candles'
+	}
+	updateCandleChart(){
+		const {last}=this.stock
+		console.log(this.kData)
+		return
+		let priceRange:any[]=d3Array.extent(this.mData,(d)=>d.price)
+		let maxPriceRange=Math.max(...priceRange.map(price=>Math.abs(price-last)))
+		let maxPercentage=Math.ceil(maxPriceRange*100 /last)
+		if(maxPercentage>10){
+			maxPercentage=10
+		}else{
+			maxPriceRange=last*(maxPercentage/100)
+		}
+		priceRange=[last-maxPriceRange,last+maxPriceRange]
+		this.priceScale.domain(priceRange)
+		this.timeScale.domain(Array(242).fill(0).map((x,i)=>i))//this.mData.map(d=>d.time))
+		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
+
+		const priceAxis=this.g.select('.price-axis')
+					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
+					.call(this.alignPriceLabel)
+
 	}
 	updateMinsChart(){
 		const {last}=this.stock
@@ -166,13 +226,13 @@ export class DetailsPage {
 		// 				.attr("x", 24)
 		this.g.select('.time-axis')
 					.call(d3Axis.axisBottom(this.timeScale)
-											.tickValues([0,120,241])
+											.tickValues([0,241])
 											.tickFormat(d=>{
 												switch(d){
 													case 0:
 														return '9:30'
-													case 120:
-														return '11:30|13:00'
+													case 121:
+														return '11:30/13:00'
 													case 241:
 														return '15:00'
 												}
@@ -182,15 +242,13 @@ export class DetailsPage {
 					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
-													.call(d3Axis.axisLeft(this.volumeScale).ticks(2))
-		volumeAxis.selectAll('line')
-							.attr('x2',6)
-		volumeAxis.selectAll('text')
-							.attr('x',24)
-console.log(this.mData)
+													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
+
 		this.g.select('.price-line')
 		//			.datum(StatsLineChart)
 					.attr('d', this.priceLine(this.mData))
+		this.g.select('.avg-line')
+					.attr('d',this.avgLine(this.mData))
 
     const volumeBars=this.g.selectAll(".bar")
          									.data(this.mData)
@@ -245,32 +303,44 @@ console.log(this.mData)
 													.retry()
 													.subscribe(stock=>{
 														this.stock=stock
-														if(this.chartType==='minutes'){
-														this.minsSubscription=timer(0,MINS_INTERVAL)
-																									.filter(x=>x===0 || isOpening())
-																									.switchMap(x=>this.stockService
-																									.fetchMinutes(this.code)
-																									.then(()=>this.stockService.getMinutes(this.code)))
-																									.retry()
-																									.subscribe((mData)=>{
-																										this.mData=mData
-																										this.updateMinsChart()
-																									})
-														}
-														if(this.chartType==='days'){
-
-														}
+														this.showChart()
 													})
 	}
+
 	ionViewDidEnter(){
 		console.log('enter')
 
 	}
 	ionViewWillLeave(){
 		this.stockSubscription.unsubscribe()
-		this.minsSubscription.unsubscribe()
+		this.chartSubscription.unsubscribe()
 	  //this.clearTimer();
 		this.clearChartTimer()
+	}
+	showChart(){
+		if(this.chartType==='minutes'){
+			this.chartSubscription=timer(0,MINS_INTERVAL)
+															.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
+															.switchMap(x=>this.stockService
+															.fetchMinutes(this.code)
+															.then(()=>this.stockService.getMinutes(this.code)))
+															.retry()
+															.subscribe((mData)=>{
+																this.mData=mData
+																this.updateMinsChart()
+															})
+		}
+		if(this.chartType==='days'){
+			this.chartSubscription=Observable.from(this.stockService
+																								.fetchKDays(this.code)
+																								.then(()=>this.stockService.getKDays(this.code))
+																			)
+																			.retry()
+																			.subscribe(data=>{
+																				this.kData=data
+																				this.updateCandleChart()
+																			})
+		}
 	}
 	pollingChart(force){
 		if(this.stockService.isOpening()||force){
@@ -733,7 +803,13 @@ console.log(this.mData)
     ctx.stroke();
   }
 	updateChart(){
-		this.renderCharts(this.chartType)
+		this.chartSubscription.unsubscribe()
+		if(this.chartType==='minutes' && this.curChart!=='mins'){
+			this.initMinsAxis()
+		}else if(this.chartType!=='minutes' && this.curChart!=='candles'){
+			this.initCandleAxis()
+		}
+		this.showChart()
 	}
 	showSearchBar(){
 		const modal = this.modalCtrl.create(SearchPage,{nav:this.nav})
