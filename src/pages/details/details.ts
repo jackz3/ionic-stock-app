@@ -183,23 +183,54 @@ export class DetailsPage {
 	updateCandleChart(){
 		const {last}=this.stock
 		console.log(this.kData)
-		return
-		let priceRange:any[]=d3Array.extent(this.mData,(d)=>d.price)
-		let maxPriceRange=Math.max(...priceRange.map(price=>Math.abs(price-last)))
-		let maxPercentage=Math.ceil(maxPriceRange*100 /last)
-		if(maxPercentage>10){
-			maxPercentage=10
-		}else{
-			maxPriceRange=last*(maxPercentage/100)
-		}
-		priceRange=[last-maxPriceRange,last+maxPriceRange]
+		const highest=d3Array.max(this.kData,d=>d.high)
+		const lowest=d3Array.min(this.kData,d=>d.low)
+		let priceRange=[lowest,highest]
 		this.priceScale.domain(priceRange)
-		this.timeScale.domain(Array(242).fill(0).map((x,i)=>i))//this.mData.map(d=>d.time))
-		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
+		const timeRange=this.kData.map(d=>d.date.toLocaleDateString())
+		this.timeScale.domain(timeRange)
+		this.volumeScale.domain([0,d3Array.max(this.kData,d=>d.volume)])
 
 		const priceAxis=this.g.select('.price-axis')
-					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
-					.call(this.alignPriceLabel)
+					.call(d3Axis.axisRight(this.priceScale).tickValues([]))
+		const timeMod=10-1
+		const timeValues=timeRange.filter((x,i)=>i%10===timeMod)
+		this.g.select('.time-axis')
+					.call(d3Axis.axisBottom(this.timeScale).tickValues(timeValues))
+		this.g.select('.volume-time-axis')
+					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
+
+		const volumeAxis=this.g.select('.volume-axis')
+													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
+
+		const candleBars=this.g.selectAll('.candle-bar')
+													.data(this.kData)
+		candleBars.enter()
+							.append('rect')
+							.attr('class','candle-bar')
+							.merge(candleBars)
+							.attr('x',d=>this.timeScale(d.date.toLocaleDateString()))
+							.attr('y',d=>this.priceScale(d.high))
+    const volumeBars=this.g.selectAll(".bar")
+         									.data(this.kData)
+		volumeBars.enter()
+							.append("rect")
+							.attr('class','bar')
+							.merge(volumeBars)
+							// .attr('fill',d=>{
+							// 	if(d.price>last){
+							// 		return 'red'
+							// 	}else if(d.price<last){
+							// 		return 'green'
+							// 	}else{
+							// 		return 'black'
+							// 	}
+							// })
+         			.attr("x", (d) => this.timeScale(d.date.toLocaleDateString()) )
+         			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
+         			.attr("width", this.timeScale.bandwidth())
+							.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
+		volumeBars.exit().remove()
 
 	}
 	updateMinsChart(){
@@ -303,7 +334,9 @@ export class DetailsPage {
 													.retry()
 													.subscribe(stock=>{
 														this.stock=stock
-														this.showChart()
+														if(!this.chartSubscription){
+															this.showChart()
+														}
 													})
 	}
 
@@ -315,7 +348,7 @@ export class DetailsPage {
 		this.stockSubscription.unsubscribe()
 		this.chartSubscription.unsubscribe()
 	  //this.clearTimer();
-		this.clearChartTimer()
+		//this.clearChartTimer()
 	}
 	showChart(){
 		if(this.chartType==='minutes'){
@@ -337,7 +370,8 @@ export class DetailsPage {
 																			)
 																			.retry()
 																			.subscribe(data=>{
-																				this.kData=data
+																				console.log('up candle')
+																				this.kData=data.slice(0,40)
 																				this.updateCandleChart()
 																			})
 		}
@@ -362,37 +396,13 @@ export class DetailsPage {
 			this.chartTimer=setTimeout(this.pollingChart.bind(this),interval*1000);
 		}
 	}
-	clearChartTimer(){
-		if(this.chartTimer){
-			clearTimeout(this.chartTimer);
-			this.chartTimer=null;
-		}
-	}
-	initCanvas(){
-		let wrapper//=this.canvasRef.nativeElement
-		let width=wrapper.clientWidth;
-		console.log(width)
-    let canvasHeight=this.mChart.height=width*0.625,
-				timeHeight=18,
-        priceHeight=Math.floor(canvasHeight/5)*4-18-1,
-        volumeHeight=canvasHeight-priceHeight-timeHeight;
+	// clearChartTimer(){
+	// 	if(this.chartTimer){
+	// 		clearTimeout(this.chartTimer);
+	// 		this.chartTimer=null;
+	// 	}
+	// }
 
-		this.canvas=wrapper.querySelector('canvas');
-    let ctx = this.canvas.getContext("2d");
-    ctx.canvas.width  = width;
-    ctx.canvas.height = canvasHeight;
-
-		this.bufCanvas = document.createElement('canvas');
-    this.bufCanvas.width = width;
-    this.bufCanvas.height = canvasHeight;
-
-		this.mChart.width=width;
-		this.mChart.priceHeight=priceHeight;
-    this.mChart.timeHeight=timeHeight;
-    this.mChart.volumeHeight=volumeHeight;
-    this.mChart.spacing= (width-2)/242;
-
-	}
 	renderCharts(chartType){
 		if(chartType==='minutes'){
 			if(!this.chartTimer){
@@ -444,7 +454,7 @@ export class DetailsPage {
 		// 			});
 		// 		}
 		}else{
-			this.clearChartTimer();
+			//this.clearChartTimer();
 			let kData=this.getKData(chartType);
 			if(kData){
 				setTimeout(this.renderKChart.bind(this,kData),0);
