@@ -79,7 +79,12 @@ export class HomePage {
 				}
 				return isOpening()
 			}).switchMap(x=>this.stockService.fetchRankings(this.segment)).retry()
-				.subscribe(x=>this.stocks=x)
+				.subscribe(x=>{
+					if(firstLoad){
+						firstLoad=false
+						this.loading.dismiss()
+					}
+					this.stocks=x})
 		}
 	}
 	ionViewDidEnter(){
@@ -106,7 +111,6 @@ export class HomePage {
     modal.present()
 	}
 	updateSeg(){
-		console.log(this.segment)
 		this.stockService.fetchRankings(this.segment)
 					.then(x=>this.stocks=x)
 	}

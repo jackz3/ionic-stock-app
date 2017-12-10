@@ -11,6 +11,7 @@ import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 import * as d3Shape from "d3-shape"
 import * as d3Time from 'd3-time'
+import * as d3TimeFomat from 'd3-time-format'
 import { Loading } from 'ionic-angular/components/loading/loading';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from'
@@ -61,6 +62,9 @@ export class DetailsPage {
 	priceScale:any
 	volumeScale
 	timeScale
+	ma5Line: d3Shape.Line<[number, number]>
+	ma10Line: d3Shape.Line<[number, number]>
+	ma20Line: d3Shape.Line<[number, number]>
 
   constructor(
 		private localData:LocalData,
@@ -111,6 +115,15 @@ export class DetailsPage {
 		this.avgLine=d3Shape.line()
 												.x((d:any,idx)=>this.timeScale(idx))
 												.y((d:any)=>this.priceScale(d.avg_price))
+		this.ma5Line=d3Shape.line()
+												.x((d:any)=>this.timeScale(d.date))
+												.y((d:any)=>this.priceScale(d.ma5))
+		this.ma10Line=d3Shape.line()
+												.x((d:any)=>this.timeScale(d.date))
+												.y((d:any)=>this.priceScale(d.ma10))
+		this.ma20Line=d3Shape.line()
+												.x((d:any)=>this.timeScale(d.date))
+												.y((d:any)=>this.priceScale(d.ma20))
 	}
 	initMinsAxis() {
 		this.g.html(null)
@@ -162,7 +175,7 @@ export class DetailsPage {
 														.nice()
 		this.timeScale=d3Scale.scaleBand()
 													.range([0, this.width])
-													.padding(0.2)
+													.padding(0.3)
 
 		this.g.append("g")
 					.attr('class','price-axis')
@@ -177,7 +190,13 @@ export class DetailsPage {
 					.attr('transform',`translate(0,${this.height})`)
 
 		this.g.append('path')
-					.attr('class','ma-line')
+					.attr('class','ma5 ma-line')
+		this.g.append('path')
+					.attr('class','ma10 ma-line')
+		this.g.append('path')
+					.attr('class','ma20 ma-line')
+		this.g.append('g')
+					.attr('class','candle-info')
 		this.curChart='candles'
 	}
 	updateCandleChart(){
@@ -187,7 +206,7 @@ export class DetailsPage {
 		const lowest=d3Array.min(this.kData,d=>d.low)
 		let priceRange=[lowest,highest]
 		this.priceScale.domain(priceRange)
-		const timeRange=this.kData.map(d=>d.date.toLocaleDateString())
+		const timeRange=this.kData.map(d=>d.date)
 		this.timeScale.domain(timeRange)
 		this.volumeScale.domain([0,d3Array.max(this.kData,d=>d.volume)])
 
@@ -196,12 +215,25 @@ export class DetailsPage {
 		const timeMod=10-1
 		const timeValues=timeRange.filter((x,i)=>i%10===timeMod)
 		this.g.select('.time-axis')
-					.call(d3Axis.axisBottom(this.timeScale).tickValues(timeValues))
+					.call(d3Axis.axisBottom(this.timeScale)
+											.tickValues(timeValues)
+											.tickFormat(d3TimeFomat.timeFormat("%y%m%d")))
 		this.g.select('.volume-time-axis')
 					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
 													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
+
+		const candleLines=this.g.selectAll('.candle-line')
+														.data(this.kData)
+		candleLines.enter()
+							.append('line')
+							.attr('class','candle-line')
+							.merge(candleLines)
+							.attr('x1',d=>this.timeScale(d.date))
+							.attr('y1',d=>this.priceScale(d.high))
+							.attr('x2',d=>this.timeScale(d.date))
+							.attr('y2',d=>this.priceScale(d.low))
 
 		const candleBars=this.g.selectAll('.candle-bar')
 													.data(this.kData)
@@ -209,8 +241,32 @@ export class DetailsPage {
 							.append('rect')
 							.attr('class','candle-bar')
 							.merge(candleBars)
-							.attr('x',d=>this.timeScale(d.date.toLocaleDateString()))
-							.attr('y',d=>this.priceScale(d.high))
+							.attr('x',d=>this.timeScale(d.date))
+							.attr('y',d=>{
+								if(d.close>d.open){
+									return this.priceScale(d.close)
+								}
+								return this.priceScale(d.open)
+							})
+							.attr('width',d=>this.timeScale.bandwidth())
+							.attr('height',d=>Math.abs(this.priceScale(d.open)-this.priceScale(d.close)))
+							.attr('fill',d=>this.stockColor(d.open,d.close))
+							.on('mouseover',function(d){
+								const candleInfo=this.g.select('.candle-info')
+																			//.transition()
+																			//.duration(200)
+																			.attr("transform", `translate(10,10)`)
+																			// .style({
+																			// 	left:10,
+																			// 	top:10
+																			// })
+																			//debugger
+								candleInfo.html(null)
+													.append('text')
+													.text(d.open)
+							}.bind(this))
+		candleBars.exit().remove()
+
     const volumeBars=this.g.selectAll(".bar")
          									.data(this.kData)
 		volumeBars.enter()
@@ -226,12 +282,18 @@ export class DetailsPage {
 							// 		return 'black'
 							// 	}
 							// })
-         			.attr("x", (d) => this.timeScale(d.date.toLocaleDateString()) )
+         			.attr("x", (d) => this.timeScale(d.date))
          			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
          			.attr("width", this.timeScale.bandwidth())
 							.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
+							.attr('fill',d=>this.stockColor(d.open,d.close))
 		volumeBars.exit().remove()
-
+		this.g.select('.ma5')
+					.attr('d',this.ma5Line(this.kData))
+		this.g.select('.ma10')
+					.attr('d',this.ma10Line(this.kData))
+		this.g.select('.ma20')
+					.attr('d',this.ma20Line(this.kData))
 	}
 	updateMinsChart(){
 		const {last}=this.stock
@@ -375,6 +437,32 @@ export class DetailsPage {
 																				this.updateCandleChart()
 																			})
 		}
+		if(this.chartType==='weeks'){
+			this.chartSubscription=Observable.from(this.stockService
+																			.fetchKWeeks(this.code)
+																			.then(()=>this.stockService.getKWeeks(this.code)))
+																			.retry()
+																			.subscribe(data=>{
+																				this.kData=data.slice(0,40)
+																				this.updateCandleChart()
+																			})
+		}
+		if(this.chartType==='months'){
+			this.chartSubscription=Observable.from(this.stockService
+																								.fetchKMonths(this.code)
+																								.then(()=>this.stockService.getKMonths(this.code)))
+																								.retry()
+																								.subscribe(data=>{
+																									this.kData=data.slice(0,40)
+																									this.updateCandleChart()
+																								})
+		}
+	}
+	stockColor(open,close){
+		if(close>open){
+			return 'red'
+		}
+		return 'green'
 	}
 	pollingChart(force){
 		if(this.stockService.isOpening()||force){

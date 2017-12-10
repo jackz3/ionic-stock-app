@@ -67,3 +67,27 @@ ion-content.details-bg {
 	stroke-width: 1px;
 	stroke:#eee;
 }
+.candle-line{
+	stroke-width: 1px;
+
+}
+.ma-line{
+	fill:none;
+	stroke-width:1px;
+}
+.ma5{
+	stroke: grey;
+}
+.ma10{
+	stroke: black;
+}
+.ma20{
+	stroke: blue;
+}
+.candle-info{
+	position: absolute;
+	display: none;
+	border:black solid 1px;
+	width:10em;
+	height: 20em;
+}
