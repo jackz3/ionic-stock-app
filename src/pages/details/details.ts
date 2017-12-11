@@ -103,12 +103,26 @@ export class DetailsPage {
 	}
 	initSvg(){
 		this.svg = d3.select(this.chartRef.nativeElement)
+								.on("mousemove", function () {
+									const cx = d3.mouse(this)[0]
+									const cy = d3.mouse(this)[1]
+									this.drawCursorLine(cx, cy)
+									console.log('mm',cx,cy)
+								}.bind(this))
+								.on("mouseover", function () {
+									d3.selectAll('.cursorline').style("display", "block");
+								})
+								.on("mouseout", function () {
+									d3.selectAll('.cursorline').style("display", "none");
+								})
 								.append("svg")
 								.attr("width", '100%')
 								.attr("height", '100%')
 								.attr('viewBox','0 0 1080 500')
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
+		this.g.append('line').attr('class','vline cursorline')
+		this.g.append('line').attr('class','hline cursorline')
 		this.priceLine = d3Shape.line()
 														.x( (d:any,idx) => this.timeScale(idx) )
 														.y( (d:any) => this.priceScale(d.price) )
@@ -124,6 +138,14 @@ export class DetailsPage {
 		this.ma20Line=d3Shape.line()
 												.x((d:any)=>this.timeScale(d.date))
 												.y((d:any)=>this.priceScale(d.ma20))
+	}
+	drawCursorLine(cx, cy) {
+		d3.selectAll('.vline')
+			.attr("x1", 0)
+			.attr("y1", cy)
+			.attr("x2", this.width)
+			.attr("y2", cy)
+			.style("display", "block")
 	}
 	initMinsAxis() {
 		this.g.html(null)
@@ -230,10 +252,16 @@ export class DetailsPage {
 							.append('line')
 							.attr('class','candle-line')
 							.merge(candleLines)
-							.attr('x1',d=>this.timeScale(d.date))
+							.attr('x1',d=>this.timeScale(d.date)+this.timeScale.bandwidth()/2)
 							.attr('y1',d=>this.priceScale(d.high))
-							.attr('x2',d=>this.timeScale(d.date))
+							.attr('x2',d=>this.timeScale(d.date)+this.timeScale.bandwidth()/2)
 							.attr('y2',d=>this.priceScale(d.low))
+							.style({
+								stroke:'grey',
+								'stroke-width':1,
+								fill:'none'
+							})
+		candleLines.exit().remove()
 
 		const candleBars=this.g.selectAll('.candle-bar')
 													.data(this.kData)
