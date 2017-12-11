@@ -102,13 +102,14 @@ export class DetailsPage {
 		this.initMinsAxis()
 	}
 	initSvg(){
+		const that=this
 		this.svg = d3.select(this.chartRef.nativeElement)
 								.on("mousemove", function () {
 									const cx = d3.mouse(this)[0]
 									const cy = d3.mouse(this)[1]
-									this.drawCursorLine(cx, cy)
+									that.drawCursorLine(cx, cy)
 									console.log('mm',cx,cy)
-								}.bind(this))
+								})
 								.on("mouseover", function () {
 									d3.selectAll('.cursorline').style("display", "block");
 								})
@@ -119,10 +120,9 @@ export class DetailsPage {
 								.attr("width", '100%')
 								.attr("height", '100%')
 								.attr('viewBox','0 0 1080 500')
+								console.log('w',this.width,this.height)
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
-		this.g.append('line').attr('class','vline cursorline')
-		this.g.append('line').attr('class','hline cursorline')
 		this.priceLine = d3Shape.line()
 														.x( (d:any,idx) => this.timeScale(idx) )
 														.y( (d:any) => this.priceScale(d.price) )
@@ -139,16 +139,34 @@ export class DetailsPage {
 												.x((d:any)=>this.timeScale(d.date))
 												.y((d:any)=>this.priceScale(d.ma20))
 	}
+	initCursorLine(){
+		this.g.append('line').attr('class','vline cursorline')
+		this.g.append('line').attr('class','hline cursorline')
+	}
 	drawCursorLine(cx, cy) {
-		d3.selectAll('.vline')
-			.attr("x1", 0)
-			.attr("y1", cy)
+		const realWidth=this.chartRef.nativeElement.clientWidth
+		const realHeight=this.chartRef.nativeElement.clientHeight
+		const y=cy-this.margin.top
+		const x=cx-this.margin.left
+		if(x<0 || y<0){
+			return
+		}
+		this.g.select('.vline')
+					.attr("x1", 0)
+			.attr("y1", y*500/realHeight)
 			.attr("x2", this.width)
-			.attr("y2", cy)
+			.attr("y2", y*500/realHeight)
 			.style("display", "block")
+		this.g.select('.hline')
+					.attr('x1',x*1080/realWidth)
+					.attr('y1',0)
+					.attr('x2',x*1080/realWidth)
+					.attr('y2',this.height)
+					.style('display','block')
 	}
 	initMinsAxis() {
 		this.g.html(null)
+		this.initCursorLine()
 		this.priceScale=d3Scale.scaleLinear()
 													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
@@ -190,6 +208,7 @@ export class DetailsPage {
 	}
 	initCandleAxis(){
 		this.g.html(null)
+		this.initCursorLine()
 		this.priceScale=d3Scale.scaleLinear()
 													.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
@@ -256,11 +275,7 @@ export class DetailsPage {
 							.attr('y1',d=>this.priceScale(d.high))
 							.attr('x2',d=>this.timeScale(d.date)+this.timeScale.bandwidth()/2)
 							.attr('y2',d=>this.priceScale(d.low))
-							.style({
-								stroke:'grey',
-								'stroke-width':1,
-								fill:'none'
-							})
+							.attr('stroke',d=>this.stockColor(d.open,d.close))
 		candleLines.exit().remove()
 
 		const candleBars=this.g.selectAll('.candle-bar')
