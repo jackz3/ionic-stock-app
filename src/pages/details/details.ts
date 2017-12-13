@@ -41,6 +41,7 @@ export class DetailsPage {
 	stockSubscription:Subscription
 	chartSubscription:Subscription
 	//@ViewChild('myMap') myMap
+	chartWrapper: d3.Selection<any, {}, null, undefined>;
 	width: number
 	height: number
 	volumeHeight:number
@@ -103,22 +104,24 @@ export class DetailsPage {
 	}
 	initSvg(){
 		const that=this
-		this.svg = d3.select(this.chartRef.nativeElement)
-								.on("mousemove", function () {
-									const cx = d3.mouse(this)[0]
-									const cy = d3.mouse(this)[1]
-									that.drawCursorLine(cx, cy)
-									console.log('mm',cx,cy)
-								})
-								.on("mouseover", function () {
-									d3.selectAll('.cursorline').style("display", "block");
-								})
-								.on("mouseout", function () {
-									d3.selectAll('.cursorline').style("display", "none");
-								})
-								.append("svg")
-								.attr("width", '100%')
-								.attr("height", '100%')
+		this.chartWrapper=d3.select(this.chartRef.nativeElement)
+												.on("mousemove", function () {
+													const cx = d3.mouse(this)[0]
+													const cy = d3.mouse(this)[1]
+													that.drawCursorLine(cx, cy)
+													console.log('mm',cx,cy)
+												})
+												.on("mouseover", function () {
+													d3.selectAll('.cursorline').style("display", "block");
+												})
+												.on("mouseout", function () {
+													d3.selectAll('.cursorline').style("display", "none");
+												})
+		this.chartWrapper.append('div')
+										.attr('class','candle-info')
+		this.svg = this.chartWrapper.append("svg")
+																.attr("width", '100%')
+																.attr("height", '100%')
 								.attr('viewBox','0 0 1080 500')
 								console.log('w',this.width,this.height)
 		this.g = this.svg.append("g")
@@ -295,18 +298,19 @@ export class DetailsPage {
 							.attr('height',d=>Math.abs(this.priceScale(d.open)-this.priceScale(d.close)))
 							.attr('fill',d=>this.stockColor(d.open,d.close))
 							.on('mouseover',function(d){
-								const candleInfo=this.g.select('.candle-info')
+								debugger
+								const candleInfo=this.chartWrapper.select('.candle-info')
 																			//.transition()
 																			//.duration(200)
-																			.attr("transform", `translate(10,10)`)
-																			// .style({
-																			// 	left:10,
-																			// 	top:10
-																			// })
-																			//debugger
-								candleInfo.html(null)
-													.append('text')
-													.text(d.open)
+																			//.attr("transform", `translate(10,10)`)
+																			.style({
+																				left:10,
+																				top:10
+																			})
+								candleInfo.html('ccc'+d.open)
+													// .append('text')
+													// .text(d.open)
+													// .text(d.close)
 							}.bind(this))
 		candleBars.exit().remove()
 
