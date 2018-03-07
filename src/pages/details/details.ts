@@ -48,7 +48,7 @@ export class DetailsPage {
 	priceHeight:number
 	timeHeight:number=40
 	volumeTop:number
-	margin = {top: 5, right: 0, bottom: 0, left: 0}
+	margin = {top: 8, right: 0, bottom: 4, left: 0}
 	xScale:any
 	yScale:any
   x: any;
@@ -58,6 +58,8 @@ export class DetailsPage {
 	priceLine: d3Shape.Line<[number, number]>
 	avgLine:d3Shape.Line<[number,number]>
 	@ViewChild('stockChart') chartRef: ElementRef
+	viewWidth:number=1080
+	viewHeight:number=500
 	mData=[]
 	kData=[]
 	priceScale:any
@@ -103,13 +105,12 @@ export class DetailsPage {
 		this.initMinsAxis()
 	}
 	initSvg(){
-		const that=this
 		this.chartWrapper=d3.select(this.chartRef.nativeElement)
-												.on("mousemove", function () {
-													const cx = d3.mouse(this)[0]
-													const cy = d3.mouse(this)[1]
-													that.drawCursorLine(cx, cy)
-													console.log('mm',cx,cy)
+												.on("mousemove", (a,b,selection)=>{
+													//debugger
+													const cx = d3.mouse(selection[0])[0]
+													const cy = d3.mouse(selection[0])[1]
+													this.drawCursorLine(cx, cy)
 												})
 												.on("mouseover", function () {
 													d3.selectAll('.cursorline').style("display", "block");
@@ -146,9 +147,13 @@ export class DetailsPage {
 		this.g.append('line').attr('class','vline cursorline')
 		this.g.append('line').attr('class','hline cursorline')
 	}
+	drawActiveTick(cx,cy){
+
+	}
 	drawCursorLine(cx, cy) {
-		const realWidth=this.chartRef.nativeElement.clientWidth
-		const realHeight=this.chartRef.nativeElement.clientHeight
+		const wrapperWidth=this.chartRef.nativeElement.clientWidth
+		const wrapperHeight=this.chartRef.nativeElement.clientHeight
+		const svgHeight=this.svg.node().clientHeight-this.margin.top-this.margin.bottom
 		const y=cy-this.margin.top
 		const x=cx-this.margin.left
 		if(x<0 || y<0){
@@ -156,14 +161,14 @@ export class DetailsPage {
 		}
 		this.g.select('.vline')
 					.attr("x1", 0)
-			.attr("y1", y*500/realHeight)
-			.attr("x2", this.width)
-			.attr("y2", y*500/realHeight)
-			.style("display", "block")
+					.attr("y1", y*this.height/svgHeight)
+					.attr("x2", this.width)
+					.attr("y2", y*this.height/svgHeight)
+					.style("display", "block")
 		this.g.select('.hline')
-					.attr('x1',x*1080/realWidth)
+					.attr('x1',x*this.width/wrapperWidth)
 					.attr('y1',0)
-					.attr('x2',x*1080/realWidth)
+					.attr('x2',x*this.width/wrapperWidth)
 					.attr('y2',this.height)
 					.style('display','block')
 	}
@@ -181,6 +186,7 @@ export class DetailsPage {
 
 		this.g.append("g")
 					.attr('class','price-axis')
+					.attr("transform", `translate(0,0)`)
 		this.g.append('g')
 					.attr('class','time-axis')
 					.attr("transform", `translate(0,${this.priceHeight})`)
@@ -207,6 +213,17 @@ export class DetailsPage {
 					.attr('y1',this.priceHeight/2)
 					.attr('x2',this.width)
 					.attr('y2',this.priceHeight/2)
+		this.g.append('text')
+					.attr('class','mid-tick time-axis')
+					.attr('x',this.width/2)
+					.attr('y',this.priceHeight+6)
+					.attr('text-anchor','middle')
+					.attr('alignment-baseline','hanging')
+					.text('11:30 13:00')
+		this.g.append('text')
+					.attr('class','active-tick time-axis')
+					.attr('y',this.priceHeight+20)
+					.attr('text-anchor','middle')
 		this.curChart='mins'
 	}
 	initCandleAxis(){
