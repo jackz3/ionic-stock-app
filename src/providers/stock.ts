@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http'
 import * as moment from 'moment'
-import { Observable } from 'rxjs/Observable'
-import { fromPromise } from 'rxjs/observable/fromPromise'
+import {Observable} from 'rxjs/Observable'
+import {fromPromise} from 'rxjs/observable/fromPromise'
 
 declare global {
   interface Window {
@@ -33,7 +34,7 @@ function getScript(url){
   return promise
 }
 
-function procStock(stock){
+function procStock(stock) {
 	stock.isIncrease=stock.close>stock.last;
 	stock.isDecline=stock.last>stock.close;
 	stock.diff=stock.last?stock.close-stock.last:'-';
@@ -60,7 +61,7 @@ export function	isOpening(){
 @Injectable()
 export class StockService {
 	_data:Object={}
-  constructor() {
+  constructor(private http: HttpClient) {
   }
 	isOpening(){
     const d=new Date(),day=d.getDay();

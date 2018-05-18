@@ -42,12 +42,11 @@ export class HomePage {
 		private modalCtrl: ModalController
 	){
 		this.type=this.navParams.get('type')||'favors'
-		this.loading = this.loadingCtrl.create({ 
-			 content: '载入中...'
-		})
-		
   }
 	ionViewWillEnter(){
+		this.loading = this.loadingCtrl.create({
+			 content: '载入中...'
+		})
 		this.loading.present()
 		let firstLoad=true
 

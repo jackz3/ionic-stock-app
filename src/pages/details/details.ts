@@ -408,20 +408,24 @@ export class DetailsPage {
 					.attr('d',this.avgLine(this.mData))
 
     const volumeBars=this.g.selectAll(".bar")
-         									.data(this.mData)
+         									.data(this.mData.map((x, i, arr) => {
+														const prePrice = i === 0 ? last : arr[i-1].price
+														let color
+														if(x.price > prePrice){
+															color = 'red'
+														}else if(x.price < prePrice){
+															color = 'green'
+														}else{
+															color = 'black'
+														}
+														x.color = color
+														return x
+													 }))
 		volumeBars.enter()
 							.append("rect")
 							.attr('class','bar')
 							.merge(volumeBars)
-							.attr('fill',d=>{
-								if(d.price>last){
-									return 'red'
-								}else if(d.price<last){
-									return 'green'
-								}else{
-									return 'black'
-								}
-							})
+							.attr('fill', (d)=> d.color)
          			.attr("x", (d,i) => this.timeScale(i) )
          			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
          			.attr("width", this.timeScale.bandwidth())
@@ -452,7 +456,7 @@ export class DetailsPage {
 	}
 	ionViewWillEnter(){
 		this.stockSubscription=timer(0,PRICE_INTERVAL)
-													.filter(x=>x===0 || isOpening())
+													.filter(x=> x===0 || isOpening())
 													.switchMap(x=>this.stockService
 																						.fetchDay([this.code])
 																						.then(()=>this.stockService.getStock(this.code))

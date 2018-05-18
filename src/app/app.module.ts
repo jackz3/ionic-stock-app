@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser'
-import { HttpModule } from '@angular/http'
+import { HttpClientModule } from '@angular/common/http'
 import { ErrorHandler, NgModule } from '@angular/core'
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular'
 import { IonicStorageModule } from '@ionic/storage'
@@ -31,7 +31,7 @@ import { PriceDiff } from '../providers/price-diff'
   ],
   imports: [
     BrowserModule,
-		HttpModule,
+		HttpClientModule,
 		IonicModule.forRoot(MyApp,{},{
       links:[
         { component: HomePage, name: 'HomePage', segment: 'home/:type' },
