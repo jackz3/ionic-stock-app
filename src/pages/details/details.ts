@@ -63,6 +63,7 @@ export class DetailsPage {
 	mData=[]
 	kData=[]
 	priceScale:any
+	pricePctScale: any
 	volumeScale
 	timeScale
 	ma5Line: d3Shape.Line<[number, number]>
@@ -107,10 +108,10 @@ export class DetailsPage {
 	initSvg(){
 		this.chartWrapper=d3.select(this.chartRef.nativeElement)
 												.on("mousemove", (a,b,selection)=>{
-													//debugger
 													const cx = d3.mouse(selection[0])[0]
 													const cy = d3.mouse(selection[0])[1]
 													this.drawCursorLine(cx, cy)
+													this.drawActiveTick(cx, cy)
 												})
 												.on("mouseover", function () {
 													d3.selectAll('.cursorline').style("display", "block");
@@ -125,6 +126,17 @@ export class DetailsPage {
 																.attr("height", '100%')
 								.attr('viewBox','0 0 1080 500')
 								console.log('w',this.width,this.height)
+		const filter = this.svg
+											.append('defs')
+											.append('filter')
+											.attr('x', '0')
+											.attr('y', '0')
+											.attr('width', '1')
+											.attr('height', '1')
+											.attr('id', 'tick-bg')
+		filter.append('feFlood').attr('flood-color', '#333')
+		filter.append('feComposite').attr('in', 'SourceGraphic')
+
 		this.g = this.svg.append("g")
 										.attr("transform", `translate(${this.margin.left},${this.margin.top})`)
 		this.priceLine = d3Shape.line()
@@ -147,11 +159,40 @@ export class DetailsPage {
 		this.g.append('line').attr('class','vline cursorline')
 		this.g.append('line').attr('class','hline cursorline')
 	}
+	getTimeTick (cx, cy) {
+		const wrapperWidth=this.chartRef.nativeElement.clientWidth
+		const svgHeight=this.svg.node().clientHeight-this.margin.top-this.margin.bottom
+		const y = cy - this.margin.top
+		const x = cx - this.margin.left
+		let xPercent = x / wrapperWidth
+		let idx = Math.round(xPercent * 241)
+		const maxIdx = this.mData.length - 1
+		if (idx > maxIdx) {
+			idx = maxIdx
+		}
+		xPercent = idx / 241
+		return [xPercent, idx, y*this.height/svgHeight]
+	}
 	drawActiveTick(cx,cy){
+		const [xPercent, idx, yPos] = this.getTimeTick(cx, cy)
+		this.g.select('.active-tick.time-axis')
+					.text(`\u00A0${this.mData[idx].time}\u00A0`)
+					.attr('filter', 'url(#tick-bg)')
+					.attr('x', `${xPercent * this.width}`)
+		if (yPos >0 && yPos < this.priceHeight) {
+			this.g.select('.active-tick.price-axis')
+						.text(`\u00A0${this.priceScale.invert(yPos).toFixed(2)}\u00A0`)
+						.attr('y', yPos)
+						.attr('filter', 'url(#tick-bg)')
 
+			this.g.select('.active-tick.price-pct-axis')
+						.text(`${this.pricePctScale.invert(yPos).toFixed(2)}%`)
+						.attr('y', yPos)
+						.attr('filter', 'url(#tick-bg)')
+		}
 	}
 	drawCursorLine(cx, cy) {
-		const wrapperWidth=this.chartRef.nativeElement.clientWidth
+		const [xPercent, idx, yPos] = this.getTimeTick(cx, cy)
 		const wrapperHeight=this.chartRef.nativeElement.clientHeight
 		const svgHeight=this.svg.node().clientHeight-this.margin.top-this.margin.bottom
 		const y=cy-this.margin.top
@@ -161,14 +202,14 @@ export class DetailsPage {
 		}
 		this.g.select('.vline')
 					.attr("x1", 0)
-					.attr("y1", y*this.height/svgHeight)
+					.attr("y1", yPos)
 					.attr("x2", this.width)
-					.attr("y2", y*this.height/svgHeight)
+					.attr("y2", yPos)
 					.style("display", "block")
 		this.g.select('.hline')
-					.attr('x1',x*this.width/wrapperWidth)
+					.attr('x1',xPercent * this.width)
 					.attr('y1',0)
-					.attr('x2',x*this.width/wrapperWidth)
+					.attr('x2',xPercent * this.width)
 					.attr('y2',this.height)
 					.style('display','block')
 	}
@@ -177,6 +218,8 @@ export class DetailsPage {
 		this.initCursorLine()
 		this.priceScale=d3Scale.scaleLinear()
 													.range([this.priceHeight, 0])
+		this.pricePctScale=d3Scale.scaleLinear()
+														.range([this.priceHeight, 0])
 		this.volumeScale=d3Scale.scaleLinear()
 														.range([this.volumeHeight, 0])
 														.nice()
@@ -187,6 +230,9 @@ export class DetailsPage {
 		this.g.append("g")
 					.attr('class','price-axis')
 					.attr("transform", `translate(0,0)`)
+		this.g.append('g')
+					.attr('class', 'price-pct-axis')
+					.attr('transform', `translate(${this.width},0)`)
 		this.g.append('g')
 					.attr('class','time-axis')
 					.attr("transform", `translate(0,${this.priceHeight})`)
@@ -224,6 +270,16 @@ export class DetailsPage {
 					.attr('class','active-tick time-axis')
 					.attr('y',this.priceHeight+20)
 					.attr('text-anchor','middle')
+		this.g.append('text')
+					.attr('class','active-tick price-axis')
+					.attr('x', 20)
+					.attr('text-anchor','middle')
+					.attr('alignment-baseline','central')
+		this.g.append('text')
+					.attr('class','active-tick price-pct-axis')
+					.attr('x', this.width - 20)
+					.attr('text-anchor','middle')
+					.attr('alignment-baseline','central')
 		this.curChart='mins'
 	}
 	initCandleAxis(){
@@ -370,13 +426,18 @@ export class DetailsPage {
 			maxPriceRange=last*(maxPercentage/100)
 		}
 		priceRange=[last-maxPriceRange,last+maxPriceRange]
+		const pctRange = [-maxPercentage, maxPercentage]
 		this.priceScale.domain(priceRange)
+		this.pricePctScale.domain(pctRange)
 		this.timeScale.domain(Array(242).fill(0).map((x,i)=>i))//this.mData.map(d=>d.time))
 		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
 
 		const priceAxis=this.g.select('.price-axis')
 					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
 					.call(this.alignPriceLabel)
+		const pricePctAxis = this.g.select('.price-pct-axis')
+														.call(d3Axis.axisLeft(this.pricePctScale).tickValues(pctRange))
+														.call(this.alignPriceLabel)
 		// priceAxis.selectAll('line')
 		// 				.attr('x2',6)
 		// priceAxis.selectAll('text')
@@ -388,19 +449,17 @@ export class DetailsPage {
 												switch(d){
 													case 0:
 														return '9:30'
-													case 121:
-														return '11:30/13:00'
 													case 241:
 														return '15:00'
 												}
-											}))
+											})
+										)
 					.call(this.alignTimeLabel)
 		this.g.select('.volume-time-axis')
 					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
 													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
-
 		this.g.select('.price-line')
 		//			.datum(StatsLineChart)
 					.attr('d', this.priceLine(this.mData))
@@ -432,14 +491,19 @@ export class DetailsPage {
 							.attr("height", (d) =>this.volumeHeight-this.volumeScale(d.volume) )
 		//volumeBars.exit().remove()
 	}
-	alignPriceLabel(selection){
+	alignPriceLabel (selection){
 		selection.selectAll('.tick text')
 						.each((d,i,all)=>{
 							switch(i){
 								case 0:
-									return d3.select(all[0]).attr('alignment-baseline','after-edge')
+									return d3.select(all[0])
+													.attr('alignment-baseline','after-edge')
+													.attr('dy', '0.1rem')
+													.attr('fill', 'green')
 								case 1:
-									return d3.select(all[1]).attr('alignment-baseline','hanging')
+									return d3.select(all[1])
+													.attr('alignment-baseline','hanging')
+													.attr('fill', 'red')
 							}
 						})
 	}
@@ -464,6 +528,7 @@ export class DetailsPage {
 													.retry()
 													.subscribe(stock=>{
 														this.stock=stock
+
 														if(!this.chartSubscription){
 															this.showChart()
 														}

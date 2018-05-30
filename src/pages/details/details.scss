@@ -60,8 +60,18 @@ ion-content.details-bg {
 	stroke-width: 1px;
 	fill:none;
 }
+.price-axis{
+	font-size: 1.3rem;
+}
+.price-pct-axis{
+	font-size: 1.3rem;
+}
 .time-axis{
-	font-size: 1.6em;
+	font-size: 1.6rem;
+}
+.active-tick{
+	stroke: white;
+	fill: white;
 }
 .v-line,.h-line{
 	stroke-width: 1px;
