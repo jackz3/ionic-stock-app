@@ -1,7 +1,8 @@
 import { Component, Inject, forwardRef,ViewChild,ElementRef } from '@angular/core'
 import {NavParams,NavController,AlertController,LoadingController,ModalController} from 'ionic-angular';
 import {LocalData} from '../../providers/local-data';
-import {StockService,isOpening} from '../../providers/stock';
+import {StockService,isOpening} from '../../providers/stock'
+import {Config} from '../../providers/config'
 import {SearchPage} from '../search/search';
 import { Subscription } from 'rxjs/Subscription';
 import { timer } from 'rxjs/observable/timer';
@@ -17,8 +18,8 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from'
 //import {StockCharts} from './charts';
 
-const PRICE_INTERVAL=5000
-const MINS_INTERVAL=30000
+// const PRICE_INTERVAL=5000
+// const MINS_INTERVAL=30000
 
 @Component({
   templateUrl: 'details.html',
@@ -69,10 +70,12 @@ export class DetailsPage {
 	ma5Line: d3Shape.Line<[number, number]>
 	ma10Line: d3Shape.Line<[number, number]>
 	ma20Line: d3Shape.Line<[number, number]>
+	wideScreen: boolean
 
   constructor(
 		private localData:LocalData,
 		private stockService:StockService,
+		private config:Config,
     private navParams:NavParams,
     private nav:NavController,
     private modalCtrl: ModalController,
@@ -94,16 +97,28 @@ export class DetailsPage {
 							this.isFavor=x.includes(this.code)
 						})
 
-		this.width = 1080 - this.margin.left - this.margin.right
-		this.height = 500 - this.margin.top - this.margin.bottom
-		this.priceHeight=this.height*0.7
-		this.volumeTop=this.priceHeight+this.timeHeight
-		this.volumeHeight=this.height-this.volumeTop
+		this.config.resizeCB = this.setSvgSize.bind(this)
+		this.setSvgSize()
   }
 	ionViewDidLoad(){
 		//setTimeout(this.initCanvas.bind(this),0)
 		this.initSvg()
 		this.initMinsAxis()
+	}
+	setSvgSize () {
+		this.wideScreen= this.config.vw >= 768
+		if (this.wideScreen) {
+			this.margin.left = 40
+			this.margin.right = 40
+		} else {
+			this.margin.left = 0
+			this.margin.right = 0
+		}
+		this.width = 1080 - this.margin.left - this.margin.right
+		this.height = 500 - this.margin.top - this.margin.bottom
+		this.priceHeight=this.height*0.7
+		this.volumeTop=this.priceHeight+this.timeHeight
+		this.volumeHeight=this.height-this.volumeTop
 	}
 	initSvg(){
 		this.chartWrapper=d3.select(this.chartRef.nativeElement)
@@ -169,6 +184,9 @@ export class DetailsPage {
 		const maxIdx = this.mData.length - 1
 		if (idx > maxIdx) {
 			idx = maxIdx
+		}
+		if (idx < 0) {
+			idx = 0
 		}
 		xPercent = idx / 241
 		return [xPercent, idx, y*this.height/svgHeight]
@@ -433,10 +451,10 @@ export class DetailsPage {
 		this.volumeScale.domain([0,d3Array.max(this.mData,d=>d.volume)])
 
 		const priceAxis=this.g.select('.price-axis')
-					.call(d3Axis.axisRight(this.priceScale).tickValues(priceRange))
-					.call(this.alignPriceLabel)
+													.call(d3Axis[this.wideScreen ? 'axisLeft' : 'axisRight'](this.priceScale).tickValues(priceRange))
+													.call(this.alignPriceLabel)
 		const pricePctAxis = this.g.select('.price-pct-axis')
-														.call(d3Axis.axisLeft(this.pricePctScale).tickValues(pctRange))
+														.call(d3Axis[this.wideScreen ? 'axisRight' : 'axisLeft'](this.pricePctScale).tickValues(pctRange))
 														.call(this.alignPriceLabel)
 		// priceAxis.selectAll('line')
 		// 				.attr('x2',6)
@@ -459,7 +477,8 @@ export class DetailsPage {
 					.call(d3Axis.axisBottom(this.timeScale).tickValues([]))
 
 		const volumeAxis=this.g.select('.volume-axis')
-													.call(d3Axis.axisRight(this.volumeScale).ticks(2))
+													.call(d3Axis[this.wideScreen ? 'axisLeft' : 'axisRight'](this.volumeScale).ticks(1))
+
 		this.g.select('.price-line')
 		//			.datum(StatsLineChart)
 					.attr('d', this.priceLine(this.mData))
@@ -519,7 +538,7 @@ export class DetailsPage {
 							})
 	}
 	ionViewWillEnter(){
-		this.stockSubscription=timer(0,PRICE_INTERVAL)
+		this.stockSubscription=timer(0, this.config.priceInterval)// PRICE_INTERVAL)
 													.filter(x=> x===0 || isOpening())
 													.switchMap(x=>this.stockService
 																						.fetchDay([this.code])
@@ -547,7 +566,7 @@ export class DetailsPage {
 	}
 	showChart(){
 		if(this.chartType==='minutes'){
-			this.chartSubscription=timer(0,MINS_INTERVAL)
+			this.chartSubscription=timer(0, this.config.minsInterval)
 															.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
 															.switchMap(x=>this.stockService
 															.fetchMinutes(this.code)

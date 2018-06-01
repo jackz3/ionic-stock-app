@@ -17,6 +17,7 @@ import { WelcomePage } from '../pages/welcome/welcome'
 import {StockService} from '../providers/stock'
 import { LocalData } from '../providers/local-data'
 import { PriceDiff } from '../providers/price-diff'
+import {Config} from '../providers/config'
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { PriceDiff } from '../providers/price-diff'
   providers: [
 		StockService,
     LocalData,
+    Config,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler}

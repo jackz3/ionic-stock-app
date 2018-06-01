@@ -4,10 +4,12 @@ import { Platform,Nav } from 'ionic-angular'
 import { SplashScreen } from '@ionic-native/splash-screen'
 import {LocalData} from '../providers/local-data'
 import {StockService} from '../providers/stock'
+import {Config} from '../providers/config'
 import {HomePage} from '../pages/home/home'
 import {AboutPage} from '../pages/about/about'
 import {DetailsPage} from '../pages/details/details'
 import {WelcomePage} from '../pages/welcome/welcome'
+import { platformBrowser } from '@angular/platform-browser';
 
 @Component({
   templateUrl: 'app.html',
@@ -28,6 +30,7 @@ export class MyApp {
     splashScreen: SplashScreen,
     private localData:LocalData,
     private stockService:StockService,
+    private config:Config
   ) {
     this.localData
         .getFavors()
@@ -49,6 +52,11 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       //statusBar.styleDefault()
       //splashScreen.hide()
+    })
+    this.config.vw = platform.width()
+    platform.resize.subscribe(()=> {
+      this.config.vw = platform.width()
+      this.config.afterResize()
     })
   }
 	gotoPage(page){
