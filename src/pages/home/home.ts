@@ -67,7 +67,7 @@ export class HomePage {
 			.subscribe(stocks=>{
 				if(firstLoad){
 					firstLoad=false
-					this.loading.dismiss()
+					this.loading.dismiss().catch()
 				}
 				this.stocks=stocks
 			})
@@ -81,7 +81,7 @@ export class HomePage {
 				.subscribe(x=>{
 					if(firstLoad){
 						firstLoad=false
-						this.loading.dismiss()
+						this.loading.dismiss().catch()
 					}
 					this.stocks=x})
 		}

@@ -56,7 +56,6 @@ export class MyApp {
     this.config.vw = platform.width()
     platform.resize.subscribe(()=> {
       this.config.vw = platform.width()
-      this.config.afterResize()
     })
   }
 	gotoPage(page){

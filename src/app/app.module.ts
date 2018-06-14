@@ -13,6 +13,7 @@ import { SearchPage } from '../pages/search/search'
 import { ModifyPage } from '../pages/modify/modify'
 import { DetailsPage } from '../pages/details/details'
 import { WelcomePage } from '../pages/welcome/welcome'
+import { StockCharts } from '../pages/details/stockchart'
 
 import {StockService} from '../providers/stock'
 import { LocalData } from '../providers/local-data'
@@ -28,7 +29,8 @@ import {Config} from '../providers/config'
     SearchPage,
     ModifyPage,
     DetailsPage,
-    WelcomePage
+    WelcomePage,
+    StockCharts
   ],
   imports: [
     BrowserModule,
