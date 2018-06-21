@@ -55,6 +55,7 @@ export class StockCharts implements OnInit, OnChanges {
 	ma10Line: d3Shape.Line<[number, number]>
 	ma20Line: d3Shape.Line<[number, number]>
 	wideScreen: boolean
+	inited: boolean = false
 
   constructor(
 		private config:Config,
@@ -68,9 +69,12 @@ export class StockCharts implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    console.log(this.chartType)
+		// console.log(this.chartType)
+		if (this.inited) {
+			this.updateChart()
+		}
 	}
-	ngDoCheck () {
+	ngAfterContentInit () {
 		this.updateChart()
 	}
 	ngOnDestroy () {
@@ -81,15 +85,15 @@ export class StockCharts implements OnInit, OnChanges {
 			this.initMinsAxis()
       this.subscript()
 		}else if(this.chartType!=='minutes' && this.curChart!=='candles'){
-      this.subscript()
 			this.initCandleAxis()
+      this.subscript()
 		}
 	}
 
 	subscript(){
     if (this.chartSubscription) {
       this.chartSubscription.unsubscribe()
-    }
+		}
 		if(this.chartType==='minutes'){
 			this.chartSubscription=timer(0, this.config.minsInterval)
 															.filter(x=>this.chartType==='minutes' && x===0 || isOpening())
@@ -191,7 +195,7 @@ export class StockCharts implements OnInit, OnChanges {
 											.attr('y', '0')
 											.attr('width', '1')
 											.attr('height', '1')
-											.attr('id', 'tick-bg')
+											.attr('id', `tick-bg_${this.code}`)
 		filter.append('feFlood').attr('flood-color', '#333')
 		filter.append('feComposite').attr('in', 'SourceGraphic')
 
@@ -212,6 +216,7 @@ export class StockCharts implements OnInit, OnChanges {
 		this.ma20Line=d3Shape.line()
 												.x((d:any)=>this.timeScale(d.date))
 												.y((d:any)=>this.priceScale(d.ma20))
+		this.inited = true
 	}
 	getCursor (cx, cy): any[] {
 		const wrapper=this.chartRef.nativeElement
@@ -317,23 +322,23 @@ export class StockCharts implements OnInit, OnChanges {
 		}
 		this.g.select('.active-tick.time-axis')
 					.text(`\u00A0${this.mData[idx].time}\u00A0`)
-					.attr('filter', 'url(#tick-bg)')
+					.attr('filter', `url(#tick-bg_${this.code})`)
 					.attr('x', `${x}`)
 		if (y >0 && y < this.priceHeight) {
 			this.g.select('.active-tick.price-axis')
 						.text(`\u00A0${this.priceScale.invert(y).toFixed(2)}\u00A0`)
 						.attr('y', y)
-						.attr('filter', 'url(#tick-bg)')
+						.attr('filter', `url(#tick-bg_${this.code})`)
 			this.g.select('.active-tick.price-pct-axis')
 						.text(`${this.pricePctScale.invert(y).toFixed(2)}%`)
 						.attr('y', y)
-						.attr('filter', 'url(#tick-bg)')
+						.attr('filter', `url(#tick-bg_${this.code})`)
 			this.g.select('.active-tick.volume-tick').style('display', 'none')
 		} else if (y > this.priceHeight + 36) {
 			this.g.select('.active-tick.volume-tick')
 						.text(`\u00A0${this.volumeScale.invert(y - this.priceHeight - 36).toFixed(0)}\u00A0`)
 						.attr('y', y)
-						.attr('filter', 'url(#tick-bg)')
+						.attr('filter', `url(#tick-bg_${this.code})`)
 			this.g.select('.active-tick.price-axis').style('display', 'none')
 			this.g.select('.active-tick.price-pct-axis').style('display', 'none')
 		}
@@ -549,7 +554,7 @@ export class StockCharts implements OnInit, OnChanges {
 							.attr('height',d=>Math.abs(this.priceScale(d.open)-this.priceScale(d.close)))
 							.attr('fill',d=>this.stockColor(d.open,d.close))
 							.on('mouseover',function(d){
-								debugger
+								// debugger
 								const candleInfo=this.chartWrapper.select('.candle-info')
 																			//.transition()
 																			//.duration(200)
@@ -558,7 +563,7 @@ export class StockCharts implements OnInit, OnChanges {
 																				left:10,
 																				top:10
 																			})
-								candleInfo.html('ccc'+d.open)
+								// candleInfo.html('ccc'+d.open)
 													// .append('text')
 													// .text(d.open)
 													// .text(d.close)

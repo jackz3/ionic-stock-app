@@ -65,7 +65,7 @@ export class DetailsPage {
 													})
 	}
 	ionViewDidEnter(){
-		console.log('enter')
+		// console.log('enter')
 	}
 	ionViewWillLeave(){
 		this.stockSubscription.unsubscribe()
@@ -105,5 +105,8 @@ export class DetailsPage {
     					alert.present()
 					})
 		}
+	}
+	updateChart() {
+		console.log(this.chartType)
 	}
 }
