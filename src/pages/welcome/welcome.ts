@@ -6,6 +6,7 @@ import { NavController } from 'ionic-angular'
 })
 export class WelcomePage {
 	constructor(nav:NavController){
-    nav.push('HomePage',{type:'favors'})
+    // nav.push()
+    nav.setRoot('HomePage',{type:'favors'})
 	}
 }

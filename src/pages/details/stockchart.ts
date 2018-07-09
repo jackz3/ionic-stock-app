@@ -47,6 +47,7 @@ export class StockCharts implements OnInit, OnChanges {
 	viewHeight:number=500
 	mData=[]
 	kData=[]
+	kPageSize:number
 	priceScale:any
 	pricePctScale: any
 	volumeScale
@@ -69,8 +70,7 @@ export class StockCharts implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-		// console.log(this.chartType)
-		if (this.inited) {
+		if (this.inited && this.chartType !== this.curChart) {
 			this.updateChart()
 		}
 	}
@@ -81,10 +81,10 @@ export class StockCharts implements OnInit, OnChanges {
 		this.chartSubscription.unsubscribe()
 	}
 	updateChart(){
-		if(this.chartType==='minutes' && this.curChart!=='mins'){
+		if(this.chartType==='minutes'){
 			this.initMinsAxis()
       this.subscript()
-		}else if(this.chartType!=='minutes' && this.curChart!=='candles'){
+		}else if(this.chartType!=='minutes'){
 			this.initCandleAxis()
       this.subscript()
 		}
@@ -114,7 +114,7 @@ export class StockCharts implements OnInit, OnChanges {
 																			.retry()
 																			.subscribe(data=>{
 																				console.log('up candle')
-																				this.kData=data.slice(0,40)
+																				this.kData=data.slice(-this.kPageSize)
 																				this.updateCandleChart()
 																			})
 		}
@@ -124,7 +124,7 @@ export class StockCharts implements OnInit, OnChanges {
 																			.then(()=>this.stockService.getKWeeks(this.code)))
 																			.retry()
 																			.subscribe(data=>{
-																				this.kData=data.slice(0,40)
+																				this.kData=data.slice(-this.kPageSize)
 																				this.updateCandleChart()
 																			})
 		}
@@ -134,7 +134,7 @@ export class StockCharts implements OnInit, OnChanges {
 																								.then(()=>this.stockService.getKMonths(this.code)))
 																								.retry()
 																								.subscribe(data=>{
-																									this.kData=data.slice(0,40)
+																									this.kData=data.slice(-this.kPageSize)
 																									this.updateCandleChart()
 																								})
 		}
@@ -144,9 +144,11 @@ export class StockCharts implements OnInit, OnChanges {
 		if (this.wideScreen) {
 			this.margin.left = 40
 			this.margin.right = 40
+			this.kPageSize = 100
 		} else {
 			this.margin.left = 0
 			this.margin.right = 0
+			this.kPageSize =60
 		}
 		this.width = 1080 - this.margin.left - this.margin.right
 		this.height = 500 - this.margin.top - this.margin.bottom
@@ -180,6 +182,9 @@ export class StockCharts implements OnInit, OnChanges {
 												})
 												.on("mouseout", function () {
 													cursorState('none')
+												})
+												.on('keydown', function() {
+													console.log('aaaa')
 												})
 		this.chartWrapper.append('div')
 										.attr('class','candle-info')
@@ -310,7 +315,7 @@ export class StockCharts implements OnInit, OnChanges {
 					.attr('x', 20 - this.margin.left)
 					.attr('text-anchor', 'middle')
 					.attr('alignment-baseline', 'central')
-		this.curChart='mins'
+		this.curChart = this.chartType
 	}
 	initCursorLine(){
 		this.g.append('line').attr('class','vline cursorline')
@@ -497,7 +502,7 @@ export class StockCharts implements OnInit, OnChanges {
 					.attr('class','ma20 ma-line')
 		this.g.append('g')
 					.attr('class','candle-info')
-		this.curChart='candles'
+		this.curChart = this.chartType
 	}
 	updateCandleChart(){
 		const {last} = this

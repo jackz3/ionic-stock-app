@@ -1,5 +1,5 @@
 # ionic-stock-app
-A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](http://yunguba.duapp.com)
+A chinese stock market App built with Ionic3 + Angular4+. [live demo](http://todo.com)
 
 ### Getting Started
 
@@ -12,15 +12,15 @@ A chinese stock market App built with Ionic2 + Angular2 + ES2015. [live demo](ht
 ### Screen Shots
 
 <img src="resources/screenshots/favors.png" alt="自选股" width="376">
-<img src="resources/screenshots/detail.png" alt="详细" width="376">
+<img src="resources/screenshots/details.png" alt="详细" width="376">
 <img src="resources/screenshots/search.png" alt="搜索" width="376">
-<img src="resources/screenshots/menu.png" alt="菜单" width="376">
+<img src="resources/screenshots/pad.png" alt="pad" width="480">
 
 ### TODOS
 
 - [ ] complete charts
-- [ ] bundle
+- [ ] auto refresh charts
 - [ ] loading indicator
 - [ ] stock detail finance info (F10)
-- [ ] unit tests
 - [ ] pull to refresh
+- [ ] unit tests
