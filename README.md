@@ -1,5 +1,6 @@
 # ionic-stock-app
-A chinese stock market App built with Ionic3 + Angular4+. [live demo](http://todo.com)
+A chinese stock market App built with Ionic3 + Angular4 + d3. [live demo](http://jackz3.github.io/ionic-stock-app)
+Pure client side app, use sina, tecent api, no server side required
 
 ### Getting Started
 
@@ -14,7 +15,7 @@ A chinese stock market App built with Ionic3 + Angular4+. [live demo](http://tod
 <img src="resources/screenshots/favors.png" alt="自选股" width="376">
 <img src="resources/screenshots/details.png" alt="详细" width="376">
 <img src="resources/screenshots/search.png" alt="搜索" width="376">
-<img src="resources/screenshots/pad.png" alt="pad" width="480">
+<img src="resources/screenshots/ipad.png" alt="pad" width="480">
 
 ### TODOS
 

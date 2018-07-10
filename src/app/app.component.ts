@@ -9,7 +9,6 @@ import {HomePage} from '../pages/home/home'
 import {AboutPage} from '../pages/about/about'
 import {DetailsPage} from '../pages/details/details'
 import {WelcomePage} from '../pages/welcome/welcome'
-import { platformBrowser } from '@angular/platform-browser';
 
 @Component({
   templateUrl: 'app.html',
