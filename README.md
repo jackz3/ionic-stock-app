@@ -1,6 +1,6 @@
 # ionic-stock-app
 A chinese stock market App built with Ionic3 + Angular4 + d3. [live demo](http://jackz3.github.io/ionic-stock-app), [demo site2](http://stock.1uplayer.com)
-Pure client side app, use sina, tecent api, no server side required
+Pure client side app, use sina, tecent unofficial api, no server side required
 
 ### Getting Started
 
