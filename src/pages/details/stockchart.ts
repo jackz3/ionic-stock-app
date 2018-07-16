@@ -54,6 +54,20 @@ export class StockCharts implements OnInit, OnChanges {
 	ma5Line: d3Shape.Line<[number, number]>
 	ma10Line: d3Shape.Line<[number, number]>
 	ma20Line: d3Shape.Line<[number, number]>
+	mas = {
+		ma5: {
+			color:'grey',
+			label: 'MA5'
+		},
+		ma10: {
+			color:'black',
+			label: 'MA10'
+		},
+		ma20: {
+			color:'blue',
+			label: 'MA20'
+		}
+	}
 	wideScreen: boolean
 	inited: boolean = false
 
@@ -501,6 +515,14 @@ export class StockCharts implements OnInit, OnChanges {
 					.attr('class','ma20 ma-line')
 		this.g.append('g')
 					.attr('class','candle-info')
+		Object.keys(this.mas).forEach((ma, i) => {
+			this.g.append('text')
+						.attr('class', 'ma-legend')
+						.attr('x', 100 + i * 70)
+						.attr('y', 10)
+						.text(this.mas[ma].label)
+						.style('fill', this.mas[ma].color)
+		})
 		this.curChart = this.chartType
 	}
 	updateCandleChart(){
@@ -515,9 +537,10 @@ export class StockCharts implements OnInit, OnChanges {
 		this.volumeScale.domain([0,d3Array.max(this.kData,d=>d.volume)])
 
 		const priceAxis=this.g.select('.price-axis')
-					.call(d3Axis.axisRight(this.priceScale).tickValues([]))
-		const timeMod=10-1
-		const timeValues=timeRange.filter((x,i)=>i%10===timeMod)
+					.call(d3Axis[this.wideScreen ? 'axisLeft' : 'axisRight'](this.priceScale).tickValues(priceRange))
+					.call(this.alignPriceLabel)
+		const timeMod = 8
+		const timeValues = timeRange.filter((x,i)=> i % timeMod === 0)
 		this.g.select('.time-axis')
 					.call(d3Axis.axisBottom(this.timeScale)
 											.tickValues(timeValues)
@@ -580,15 +603,6 @@ export class StockCharts implements OnInit, OnChanges {
 							.append("rect")
 							.attr('class','bar')
 							.merge(volumeBars)
-							// .attr('fill',d=>{
-							// 	if(d.price>last){
-							// 		return 'red'
-							// 	}else if(d.price<last){
-							// 		return 'green'
-							// 	}else{
-							// 		return 'black'
-							// 	}
-							// })
          			.attr("x", (d) => this.timeScale(d.date))
          			.attr("y", (d) => this.volumeTop+this.volumeScale(d.volume) )
          			.attr("width", this.timeScale.bandwidth())
@@ -597,10 +611,13 @@ export class StockCharts implements OnInit, OnChanges {
 		volumeBars.exit().remove()
 		this.g.select('.ma5')
 					.attr('d',this.ma5Line(this.kData))
+					.attr('stroke', d => this.mas.ma5.color)
 		this.g.select('.ma10')
 					.attr('d',this.ma10Line(this.kData))
+					.attr('stroke', d => this.mas.ma10.color)
 		this.g.select('.ma20')
 					.attr('d',this.ma20Line(this.kData))
+					.attr('stroke', d => this.mas.ma20.color)
 	}
 	stockColor(open,close){
 		if(close>open){

@@ -85,15 +85,6 @@ ion-content.details-bg {
 	fill:none;
 	stroke-width:1px;
 }
-.ma5{
-	stroke: grey;
-}
-.ma10{
-	stroke: black;
-}
-.ma20{
-	stroke: blue;
-}
 .candle-info{
 	position: absolute;
 	display: none;
@@ -105,4 +96,10 @@ ion-content.details-bg {
 	stroke:#999;
 	stroke-width:1px;
 	display:none;
+}
+
+.ma-legend {
+	font-size: 1.8rem;
+	font-weight: bold;
+	text-anchor: middle;
 }
