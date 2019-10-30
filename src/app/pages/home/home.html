@@ -1,0 +1,43 @@
+<ion-header>
+	<ion-toolbar no-border-bottom>
+		<ion-buttons slot="start">
+			<ion-menu-button></ion-menu-button>
+		</ion-buttons>
+		<ion-title *ngIf="type==='favors'">自选股</ion-title>
+		<ion-segment *ngIf="type==='boards'" [(ngModel)]="segment" (ionChange)="updateSeg()">
+			<ion-segment-button value="INCREASE">
+				涨幅榜
+			</ion-segment-button>
+			<ion-segment-button value="DECLINE">
+				跌幅榜
+			</ion-segment-button>
+		</ion-segment>
+
+			<ion-buttons slot="end">
+				<ion-button *ngIf="type==='favors'" class="bar-btn bar-button-default" routerLink="/modify" routerDirection="root">
+					<ion-icon name="settings"></ion-icon>
+				</ion-button>
+				<ion-button icon-only (click)="showSearchBar()">
+					<ion-icon name="search"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+<ion-content class="home">
+  <ion-list>
+    <ion-item class="list-item" *ngFor="let stock of stocks" routerLink="/details/{{stock.code}}">
+			<div class="list-label">
+				<span class="list-code">{{stock.code.slice(2)}}</span><br>
+				<span class="list-name">{{stock.name}}</span>
+			</div>
+			<div class="list-price" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
+				<span>{{stock.close.toFixed(2)}}</span>
+			</div>
+      <div class="list-percent" [class.red]="stock.isIncrease" [class.green]="stock.isDecline" item-right>
+				<span>{{stock.percent}}</span><br>
+				<span>{{stock.diff|priceDiff}}</span>
+			</div>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

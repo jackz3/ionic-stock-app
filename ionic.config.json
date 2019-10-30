@@ -1,6 +1,5 @@
 {
-  "name": "ionic-stock-app",
-  "app_id": "",
-  "type": "ionic-angular",
-  "integrations": {}
+  "name": "stock-app",
+  "integrations": {},
+  "type": "angular"
 }
