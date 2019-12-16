@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { Routes, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 
-import { PriceDiff } from '../../providers/price-diff'
+import { PipesModule } from '../../pipes/pipes.module'
 import { HomePage } from './home'
 
 const routes: Routes = [
@@ -19,8 +19,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    PipesModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [HomePage, PriceDiff]
+  declarations: [HomePage]
 })
 export class HomePageModule {}

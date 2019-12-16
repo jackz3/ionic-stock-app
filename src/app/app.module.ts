@@ -13,7 +13,6 @@ import { AppRoutingModule } from './app-routing.module';
 
 import {StockService} from './providers/stock'
 import { LocalData } from './providers/local-data'
-// import { PriceDiff } from './providers/price-diff'
 import {Config} from './providers/config';
 
 @NgModule({
@@ -33,7 +32,6 @@ import {Config} from './providers/config';
     LocalData,
     Config
   ],
-  // exports: [PriceDiff],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
