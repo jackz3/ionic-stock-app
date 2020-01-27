@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {NavController,ModalController,LoadingController} from '@ionic/angular'
-import { Router } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import {LocalData} from '../../providers/local-data'
 import {StockService,isOpening} from '../../providers/stock'
 import {DetailsPage} from '../details/details'
@@ -40,12 +40,17 @@ export class HomePage {
 		private localData:LocalData,
 		private stockService:StockService,
 		private nav:NavController,
-		// private navParams:NavParams,
 		private loadingCtrl:LoadingController,
 		private modalCtrl: ModalController,
+		private route: ActivatedRoute,
 		private router: Router
 	){
-		this.type= 'favors'// this.navParams.get('type')||'favors'
+		// this.navParams.get('type')||'favors'
+	}
+	ngOnInit() {
+    this.route.params.subscribe(params => {
+			this.type = params.type || 'favors'
+		})
   }
 	async ionViewWillEnter(){
 		this.loading = await this.loadingCtrl.create({

@@ -1,6 +1,6 @@
 <ion-app>
-  <ion-split-pane>
-    <ion-menu>
+  <ion-split-pane contentId="main">
+    <ion-menu contentId="main">
       <ion-header>
         <ion-toolbar>
           <ion-title>ionic股市行情</ion-title>
@@ -11,7 +11,7 @@
           <ion-list-header>
             主菜单
           </ion-list-header>
-          <ion-item ion-item menuClose (click)="gotoPage(pages[0])">
+          <ion-item ion-item menuClose routerLink="/home">
             <ion-icon item-left [name]="pages[0].icon" [color]=""></ion-icon>
             自选股
           </ion-item>
@@ -29,7 +29,7 @@
       </ion-content>
     </ion-menu>
 
-    <ion-router-outlet main></ion-router-outlet>
+    <ion-router-outlet id="main"></ion-router-outlet>
     <!-- <ion-nav id="nav" [root]="root" #content swipe-back-enabled="false" main></ion-nav> -->
   </ion-split-pane>
 </ion-app>

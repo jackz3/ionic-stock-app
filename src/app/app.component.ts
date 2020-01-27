@@ -2,6 +2,7 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Component,ViewChild } from '@angular/core'
+import { Router } from '@angular/router'
 import {LocalData} from './providers/local-data'
 import {StockService} from './providers/stock'
 import {Config} from './providers/config'
@@ -22,8 +23,8 @@ export class AppComponent {
   root:any
 	pages:any[]=[
     { title: '自选股', component: HomePage, icon: 'star',type:'favors',name:'HomePage',index:0},
-    { title: '涨跌榜', component: HomePage, index: 1, icon: 'trending-up',type:'boards',name:'BoardsPage' },
-    { title: '关于', component: AboutPage, index: 2, icon: 'information-circle',name:'AboutPage' },
+    { title: '涨跌榜', url: '/home', index: 1, icon: 'trending-up', params: {type:'boards'}, name:'BoardsPage' },
+    { title: '关于', url: '/about', index: 2, icon: 'information-circle',name:'AboutPage', params: {} },
   ]
   constructor(
     private platform: Platform,
@@ -31,7 +32,8 @@ export class AppComponent {
     private statusBar: StatusBar,
     private localData:LocalData,
     private stockService:StockService,
-    private config:Config
+    private config:Config,
+    private router: Router
   ) {
     this.localData
         .getFavors().pipe(
@@ -55,12 +57,14 @@ export class AppComponent {
       this.config.vw = platform.width()
     })
   }
-	// gotoPage(page){
-	// 	if(page.name==='DetailsPage'){
-	// 		return this.nav.push(page.component,{code:page.code})
-	// 	}
-  //   this.nav.setRoot(page.component, {tabIndex: page.index,type:page.type})
-  // }
+	gotoPage(page){
+		if(page.name==='DetailsPage'){
+      // return this.nav.push(page.component,{code:page.code})
+      return this.router.navigate([])
+    }
+    this.router.navigate([page.url, page.params || {}])
+    // this.nav.setRoot(page.component, {tabIndex: page.index,type:page.type})
+  }
   // isActive(page:any) {
   //   const active=this.nav.getActive()
   //   if (active){
