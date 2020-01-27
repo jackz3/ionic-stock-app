@@ -1,30 +1,31 @@
 .list-item{
 	text-align: center;
+	display: flex;
+	height: 3.8rem;
 }
 .list-label {
-	width: 33%;
+	flex: 1;
 }
 .list-code{
-	font-size:0.9em;
+	font-size: 1rem;
 }
 .list-name{
-	font-size:1.1em;
+	font-size:1.1rem;
 }
 .list-price{
-	width:33%;
-	font-size:1.2em;
+	flex: 1;
+	font-size:1.2rem;
 	color:#444;
 }
 .list-percent{
-	width:33%;
+	flex: 1;
 	color:#444;
 }
 .list-percent span:first-child{
-	font-size: 1.2em;
-	line-height: 1.6em;
+	font-size: 1.1rem;
 }
 .list-percent span:last-child{
-	font-size:0.9em;
+	font-size:0.9rem;
 }
 .red{
 	color:red;
