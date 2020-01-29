@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
+		<ion-buttons slot="start">
+			<ion-menu-button></ion-menu-button>
+		</ion-buttons>
     <ion-title>{{stock.name && (stock.code.slice(2)+' '+stock.name)}}</ion-title>
-    <ion-buttons end>
-		  <button ion-button icon-only (click)="showSearchBar()">
-			  <ion-icon name="search"></ion-icon>
-      </button>
+		<ion-buttons slot="end">
+			<ion-button icon-only (click)="showSearchBar()">
+				<ion-icon name="search"></ion-icon>
+			</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -21,9 +21,9 @@
           <span>{{stock.diff|priceDiff}}</span>
         </ion-col>
         <ion-col col-2>
-          <button ion-button primary clear (click)="addRemove()" class="add-btn">
-            <ion-icon [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
-          </button>
+          <ion-button  primary clear (click)="addRemove()" class="add-btn">
+            <ion-icon slot="icon-only" [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
+          </ion-button>
         </ion-col>
       </ion-row>
       <ion-row>
@@ -78,7 +78,7 @@
       </ion-segment-button>
     </ion-segment>
     </div>
-    <stock-charts *ngIf="stock.close" [code]="code" [chartType]="chartType" [price]="stock.close" [volume]="stock.volume" [last]="stock.last"></stock-charts>
+    <!-- <stock-charts *ngIf="stock.close" [code]="code" [chartType]="chartType" [price]="stock.close" [volume]="stock.volume" [last]="stock.last"></stock-charts> -->
     <ion-card *ngIf="showBuySell" class="stock-prices">
       <ion-row center>
         <ion-col width-10 class="price-label">买1</ion-col>

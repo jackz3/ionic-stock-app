@@ -12,15 +12,14 @@
 				跌幅榜
 			</ion-segment-button>
 		</ion-segment>
-
-			<ion-buttons slot="end">
-				<ion-button *ngIf="type==='favors'" class="bar-btn bar-button-default" routerLink="/modify" routerDirection="root">
-					<ion-icon name="settings"></ion-icon>
-				</ion-button>
-				<ion-button icon-only (click)="showSearchBar()">
-					<ion-icon name="search"></ion-icon>
-				</ion-button>
-			</ion-buttons>
+		<ion-buttons slot="end">
+			<ion-button *ngIf="type==='favors'" class="bar-btn bar-button-default" routerLink="/modify" routerDirection="root">
+				<ion-icon name="settings"></ion-icon>
+			</ion-button>
+			<ion-button icon-only (click)="showSearchBar()">
+				<ion-icon name="search"></ion-icon>
+			</ion-button>
+		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
 <ion-content class="home">

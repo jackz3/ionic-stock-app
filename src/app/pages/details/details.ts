@@ -1,18 +1,20 @@
 import { Component, ViewChild,ElementRef } from '@angular/core'
-import {NavParams,NavController,AlertController,LoadingController,ModalController} from '@ionic/angular';
+import { Router, ActivatedRoute } from '@angular/router'
+import {NavController,AlertController,LoadingController,ModalController} from '@ionic/angular';
 import {LocalData} from '../../providers/local-data';
 import {StockService,isOpening} from '../../providers/stock'
 import {Config} from '../../providers/config'
 import {SearchPage} from '../search/search';
 import { Subscription, timer } from 'rxjs';
 import { switchMap, filter, retry } from 'rxjs/operators'
-import { async } from 'q';
+// import { async } from 'q';
 // import { timer } from 'rxjs/observable/timer';
 // import { Loading } from 'ionic-angular/components/loading/loading'
 // import 'rxjs/add/observable/from'
 
 @Component({
   templateUrl: 'details.html',
+	styleUrls: ['./details.scss']
 //	directives: [StockCharts]
 })
 export class DetailsPage {
@@ -28,30 +30,40 @@ export class DetailsPage {
 	@ViewChild('stockChart', {static: false}) chartRef: ElementRef
 
   constructor(
+		private route: ActivatedRoute,
+		private router: Router,
 		private localData:LocalData,
 		private stockService:StockService,
 		private config:Config,
-    navParams:NavParams,
+    // navParams:NavParams,
     private nav:NavController,
     private modalCtrl: ModalController,
 		private alertCtrl: AlertController,
 		loadingCtrl:LoadingController
   ){
-		this.code=navParams.get('code')
 		// this.loading = loadingCtrl.create({
     // 	message: '载入中...'
-  	// })
-		if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
-			this.showBuySell=false
-		}else{
-			this.showBuySell=true
-		}
-		this.localData.getFavors()
+		// })
+	}
+	ngOnInit() {
+    this.route.params.subscribe(params => {
+			this.code = params.code
+			if(this.code==='sh000001' || this.code.slice(0,5)==='sz399'){
+				this.showBuySell=false
+			}else{
+				this.showBuySell=true
+			}
+			this.localData.getFavors()
 						.subscribe(x=>{
 							this.favors=x
 							this.isFavor=x.includes(this.code)
 						})
-  }
+		})
+		// this.hero$ = this.route.paramMap.pipe(
+		// 	switchMap((params: ParamMap) =>
+		// 		this.service.getHero(params.get('id')))
+		// );
+	}
 	ionViewDidLoad(){
 	}
 	ionViewWillEnter(){
