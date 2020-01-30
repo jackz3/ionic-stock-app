@@ -7,11 +7,12 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
+        <ion-menu-toggle auto-Hide=false>
         <ion-list>
           <ion-list-header>
             主菜单
           </ion-list-header>
-          <ion-item ion-item menuClose routerLink="/home">
+          <ion-item routerLink="/home">
             <ion-icon item-left [name]="pages[0].icon" [color]=""></ion-icon>
             自选股
           </ion-item>
@@ -21,11 +22,12 @@
               {{s.title}}
             </button>
           </ng-container> -->
-          <ion-item ion-item menuClose *ngFor="let p of pages.slice(1)" (click)="gotoPage(p)">
+          <ion-item *ngFor="let p of pages.slice(1)" (click)="gotoPage(p)">
             <ion-icon item-left [name]="p.icon" [color]=""></ion-icon>
             {{p.title}}
           </ion-item>
         </ion-list>
+        </ion-menu-toggle>
       </ion-content>
     </ion-menu>
 
