@@ -21,8 +21,8 @@
           <span>{{stock.diff|priceDiff}}</span>
         </ion-col>
         <ion-col col-2>
-          <ion-button  primary clear (click)="addRemove()" class="add-btn">
-            <ion-icon slot="icon-only" [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
+          <ion-button icon-only (click)="addRemove()" class="add-btn">
+            <ion-icon [name]="isFavor?'remove-circle':'add-circle'"></ion-icon>
           </ion-button>
         </ion-col>
       </ion-row>

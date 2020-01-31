@@ -2,7 +2,6 @@ import { Component } from '@angular/core'
 import {NavController, ModalController, NavParams} from '@ionic/angular'
 import {LocalData} from '../../providers/local-data'
 import {StockService} from '../../providers/stock'
-import {DetailsPage} from '../details/details'
 
 @Component({
 	templateUrl:'search.html'
