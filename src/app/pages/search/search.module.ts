@@ -22,6 +22,7 @@ const routes: Routes = [
     PipesModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [SearchPage]
+  declarations: [SearchPage],
+  exports: [SearchPage]
 })
 export class SearchPageModule {}

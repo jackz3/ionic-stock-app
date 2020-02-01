@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular'
 
 import { PipesModule } from '../../pipes/pipes.module'
 import { HomePage } from './home'
-import { SearchPage } from '../search/search'
 
 const routes: Routes = [
   {
@@ -23,7 +22,7 @@ const routes: Routes = [
     PipesModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [HomePage, SearchPage],
-  entryComponents: [SearchPage]
+  declarations: [HomePage],
+  entryComponents: [],
 })
 export class HomePageModule {}

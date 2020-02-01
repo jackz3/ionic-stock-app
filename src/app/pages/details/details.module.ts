@@ -22,6 +22,7 @@ const routes: Routes = [
     PipesModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [DetailsPage]
+  declarations: [DetailsPage],
+  entryComponents: []
 })
 export class DetailsPageModule {}

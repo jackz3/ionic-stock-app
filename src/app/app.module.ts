@@ -10,6 +10,7 @@ import { IonicStorageModule } from '@ionic/storage'
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { SearchPageModule } from './pages/search/search.module'
 
 import {StockService} from './providers/stock'
 import { LocalData } from './providers/local-data'
@@ -23,7 +24,9 @@ import {Config} from './providers/config';
     HttpClientModule,
     IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
-    AppRoutingModule],
+    AppRoutingModule,
+    SearchPageModule
+  ],
   providers: [
     StatusBar,
     SplashScreen,
