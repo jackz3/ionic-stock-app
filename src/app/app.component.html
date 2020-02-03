@@ -16,16 +16,16 @@
             <ion-icon item-left [name]="pages[0].icon" [color]=""></ion-icon>
             自选股
           </ion-item>
-          <!-- <ng-container *ngIf="isActive({name:'DetailsPage'})">
-            <button ion-item menuClose *ngFor="let s of stocks" (click)="gotoPage(s)">
-              <ion-icon item-left [name]="isDetailsActive(s)" color="primary"></ion-icon>
-              {{s.title}}
-            </button>
-          </ng-container> -->
           <ion-item *ngFor="let p of pages.slice(1)" (click)="gotoPage(p)">
             <ion-icon item-left [name]="p.icon" [color]=""></ion-icon>
             {{p.title}}
           </ion-item>
+          <ng-container *ngIf="isActive('/home')">
+          <ion-item *ngFor="let stock of stocks" routerLink="/details/{{stock.code}}">
+            <ion-icon item-left [name]="isActive(stock.code) ? 'pin' : ''" color="primary"></ion-icon>
+            {{stock.title}}
+          </ion-item>
+          </ng-container>
         </ion-list>
         </ion-menu-toggle>
       </ion-content>
