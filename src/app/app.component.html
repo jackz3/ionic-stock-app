@@ -12,19 +12,19 @@
           <ion-list-header>
             主菜单
           </ion-list-header>
-          <ion-item routerLink="/home">
-            <ion-icon item-left [name]="pages[0].icon" [color]=""></ion-icon>
+          <!-- <ion-item routerLink="/home">
+            <ion-icon item-left [name]="pages[0].icon" color=" primary"></ion-icon>
             自选股
-          </ion-item>
-          <ion-item *ngFor="let p of pages.slice(1)" (click)="gotoPage(p)">
-            <ion-icon item-left [name]="p.icon" [color]=""></ion-icon>
+          </ion-item> -->
+          <ion-item *ngFor="let p of pages" (click)="gotoPage(p)">
+            <ion-icon [name]="p.icon" [color]="getColor(p)"></ion-icon>
             {{p.title}}
           </ion-item>
-          <ng-container *ngIf="isActive('/home')">
-          <ion-item *ngFor="let stock of stocks" routerLink="/details/{{stock.code}}">
-            <ion-icon item-left [name]="isActive(stock.code) ? 'pin' : ''" color="primary"></ion-icon>
-            {{stock.title}}
-          </ion-item>
+          <ng-container *ngIf="!isActive('/home')">
+            <ion-item *ngFor="let stock of stocks" routerLink="/details/{{stock.code}}">
+              <ion-icon [name]="isActive('/details/' + stock.code) ? 'pin' : ''" color="primary"></ion-icon>
+              {{stock.title}}
+            </ion-item>
           </ng-container>
         </ion-list>
         </ion-menu-toggle>

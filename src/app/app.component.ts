@@ -20,10 +20,10 @@ export class AppComponent {
   // @ViewChild('', {static: false}) nav: Nav
   stocks: any[] = []
   root:any
-	pages:any[]=[
-    { title: '自选股', component: HomePage, icon: 'star',type:'favors',name:'HomePage',index:0},
+	pages:any[] = [
+    { title: '自选股', url: '/home', icon: 'star',type:'favors',name:'HomePage', index:0},
     { title: '涨跌榜', url: '/home', index: 1, icon: 'trending-up', params: {type:'boards'}, name:'BoardsPage' },
-    { title: '关于', url: '/about', index: 2, icon: 'information-circle',name:'AboutPage', params: {} },
+    { title: '关于', url: '/about', index: 2, icon: 'information-circle',name:'AboutPage' },
   ]
   constructor(
     private platform: Platform,
@@ -62,12 +62,14 @@ export class AppComponent {
       return this.router.navigate([])
     }
     this.router.navigate([page.url, page.params || {}])
-    // this.nav.setRoot(page.component, {tabIndex: page.index,type:page.type})
   }
-  isActive (code: string) {
-    return this.router.url.indexOf(`/details/${code}`) === 0
+  isActive (url: string) {
+    return this.router.url === url
   }
-
+  getColor (page) {
+    const url = `${page.url}${page.params? ';' + Object.keys(page.params).map(x => `${x}=${page.params[x]}`).join(';') : ''}`
+    return this.router.url === url ? 'primary' : ''
+  }
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault()
