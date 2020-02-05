@@ -1,4 +1,4 @@
-import { Component, ViewChild,ElementRef } from '@angular/core'
+import { Component } from '@angular/core'
 import { Router, ActivatedRoute } from '@angular/router'
 import {NavController,AlertController,LoadingController,ModalController} from '@ionic/angular';
 import {LocalData} from '../../providers/local-data';
@@ -14,8 +14,8 @@ import { switchMap, filter, retry } from 'rxjs/operators'
 
 @Component({
   templateUrl: 'details.html',
-	styleUrls: ['./details.scss']
-//	directives: [StockCharts]
+	styleUrls: ['./details.scss'],
+	// directives: [StockCharts]
 })
 export class DetailsPage {
 	code:string
@@ -27,7 +27,7 @@ export class DetailsPage {
   isFavor:boolean=false
 	favors:string[]=[]
 	stockSubscription:Subscription
-	@ViewChild('stockChart', {static: false}) chartRef: ElementRef
+	// @ViewChild('stockChart', {static: false}) chartRef: ElementRef
 
   constructor(
 		private route: ActivatedRoute,

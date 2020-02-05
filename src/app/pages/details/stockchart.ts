@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, OnChanges, Input } from '@angular/core'
+import { Component, ViewChild, ElementRef, OnChanges, Input, ViewEncapsulation } from '@angular/core'
 import {Config} from '../../providers/config'
 import {StockService,isOpening} from '../../providers/stock'
 // import { Subscription } from 'rxjs/Subscription'
@@ -15,9 +15,11 @@ import * as d3TimeFomat from 'd3-time-format'
 
 @Component({
   selector: 'stock-charts',
-  template: '<div class="chart-wrapper" #stockChart></div>'
+  template: '<div class="chart-wrapper" #stockChart></div>',
+	styleUrls: ['./stockchart.scss'],
+	encapsulation: ViewEncapsulation.ShadowDom
 })
-export class StockCharts implements OnInit, OnChanges {
+export class StockCharts implements OnChanges {
 	@ViewChild('stockChart', {static: false}) chartRef: ElementRef
   @Input() private price: number
   @Input() private code: string
@@ -74,13 +76,14 @@ export class StockCharts implements OnInit, OnChanges {
 
   constructor(
 		private config:Config,
-		private stockService:StockService
+		private stockService:StockService,
   ) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     console.log('initing')
     this.setSvgSize()
-    this.initSvg()
+		this.initSvg()
+		this.updateChart()
   }
 
   ngOnChanges() {
@@ -88,9 +91,9 @@ export class StockCharts implements OnInit, OnChanges {
 			this.updateChart()
 		}
 	}
-	ngAfterContentInit () {
-		this.updateChart()
-	}
+	// ngAfterContentInit () {
+	// 	this.updateChart()
+	// }
 	ngOnDestroy () {
 		this.chartSubscription.unsubscribe()
 	}
