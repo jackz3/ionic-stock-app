@@ -7,10 +7,7 @@ import {Config} from '../../providers/config'
 import {SearchPage} from '../search/search';
 import { Subscription, timer } from 'rxjs';
 import { switchMap, filter, retry } from 'rxjs/operators'
-// import { async } from 'q';
-// import { timer } from 'rxjs/observable/timer';
 // import { Loading } from 'ionic-angular/components/loading/loading'
-// import 'rxjs/add/observable/from'
 
 @Component({
   templateUrl: 'details.html',
@@ -19,7 +16,7 @@ import { switchMap, filter, retry } from 'rxjs/operators'
 })
 export class DetailsPage {
 	code:string
-	// loading: Loading
+	loading:HTMLIonLoadingElement
   stock:any={}
 	chartType:string='minutes'
   showLoading:boolean=false
@@ -27,7 +24,6 @@ export class DetailsPage {
   isFavor:boolean=false
 	favors:string[]=[]
 	stockSubscription:Subscription
-	// @ViewChild('stockChart', {static: false}) chartRef: ElementRef
 
   constructor(
 		private route: ActivatedRoute,
@@ -35,15 +31,17 @@ export class DetailsPage {
 		private localData:LocalData,
 		private stockService:StockService,
 		private config:Config,
-    // navParams:NavParams,
     private nav:NavController,
     private modalCtrl: ModalController,
 		private alertCtrl: AlertController,
-		loadingCtrl:LoadingController
-  ){
-		// this.loading = loadingCtrl.create({
-    // 	message: '载入中...'
-		// })
+		private loadingCtrl:LoadingController
+  ) {
+		this.loadingCtrl.create({
+			message: '载入中...'
+		}).then(res => {
+			this.loading = res
+			this.loading.present()
+		})
 	}
 	ngOnInit() {
     this.route.params.subscribe(params => {
@@ -71,7 +69,10 @@ export class DetailsPage {
 			.pipe(filter(x=> x===0 || isOpening()),
 						switchMap(x=>this.stockService
 														.fetchDay([this.code])
-														.then(()=>this.stockService.getStock(this.code))
+														.then(()=> {
+															this.loading.dismiss().catch()
+															return this.stockService.getStock(this.code)
+														})
 						),
 						retry()
 		)

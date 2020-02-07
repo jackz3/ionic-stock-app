@@ -1,28 +1,14 @@
 import { Component } from '@angular/core';
 import {NavController,ModalController,LoadingController} from '@ionic/angular'
-import { Router, ActivatedRoute } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import {LocalData} from '../../providers/local-data'
 import {StockService,isOpening} from '../../providers/stock'
-import {DetailsPage} from '../details/details'
 import {SearchPage} from '../search/search'
-import {ModifyPage} from '../modify/modify'
 import { interval, Subscription, timer, merge } from 'rxjs'
 import { switchMap, filter, retry } from 'rxjs/operators'
-// import 'rxjs/add/observable/merge'
-// import 'rxjs/add/operator/filter'
-// import 'rxjs/add/operator/switchMap'
-// import 'rxjs/add/operator/retry'
-// import { interval } from 'rxjs/observable/interval';
-// import { Subscription } from 'rxjs/Subscription';
-// import { timer } from 'rxjs/observable/timer';
-// import { Loading } from '@ionic/angular/components/loading/loading';
 
 const INTERVAL=8000
 
-//@Component({
-//  selector: 'page-home',
-//})
-//@IonicPage()
 @Component({
 	templateUrl: 'home.html',
 	styleUrls: ['./home.scss']
@@ -43,16 +29,14 @@ export class HomePage {
 		private loadingCtrl:LoadingController,
 		private modalCtrl: ModalController,
 		private route: ActivatedRoute,
-		private router: Router
-	){
-		// this.navParams.get('type')||'favors'
+	) {
 	}
 	ngOnInit() {
     this.route.params.subscribe(params => {
 			this.type = params.type || 'favors'
 		})
   }
-	async ionViewWillEnter(){
+	async ionViewWillEnter() {
 		this.loading = await this.loadingCtrl.create({
 			message: '载入中...'
 		})
@@ -74,6 +58,7 @@ export class HomePage {
 											.then(()=>this.stockService.getStocks(this.codes))
 			), retry())
 			.subscribe(stocks=>{
+				debugger
 				if(firstLoad){
 					firstLoad=false
 					this.loading.dismiss().catch()
@@ -95,25 +80,11 @@ export class HomePage {
 					this.stocks=x})
 		}
 	}
-	ionViewDidEnter(){
-		if(this.showLoading){
-		//	this.loading = this.loading.create({
-    //		content: '载入中...'
-  	//	})
-		//	this.nav.present(this.loading)
-		}
-	}
 	ionViewWillLeave(){
 		if(this.subscription){
 			this.subscription.unsubscribe()
 		}
 	}
-  // gotoDetail(stock){
-		// this.nav.push(DetailsPage,{code:stock.code})
-  // }
-	// gotoModify(){
-	// 	this.nav.push(ModifyPage)
-	// }
 	async showSearchBar(){
 		const modal = await this.modalCtrl.create({
 			component: SearchPage,

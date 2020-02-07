@@ -48,7 +48,7 @@ export class LocalData {
 	}
   save(codes){
 		this.bsFavors.next(codes)
-		const localData={
+		const localData: {updatedDate: Date, favors: string[]} = {
 			updatedDate:new Date(),
 			favors:codes
 		}

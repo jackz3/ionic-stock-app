@@ -6,8 +6,6 @@ import { Component } from '@angular/core'
 import {LocalData} from './providers/local-data'
 import {StockService} from './providers/stock'
 import {Config} from './providers/config'
-import {HomePage} from './pages/home/home'
-import {DetailsPage} from './pages/details/details'
 import {WelcomePage} from './pages/welcome/welcome'
 import { switchMap } from 'rxjs/operators'
 
@@ -17,7 +15,6 @@ import { switchMap } from 'rxjs/operators'
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  // @ViewChild('', {static: false}) nav: Nav
   stocks: any[] = []
   root:any
 	pages:any[] = [
@@ -43,12 +40,11 @@ export class AppComponent {
         )
         .subscribe(stocks=>this.stocks=stocks.map(x=>({
               title: x.code.slice(2)+' '+x.name,
-              component: DetailsPage,
               icon: 'stats',
               code:x.code,
               name:'DetailsPage'
         })))
-    //this.localData.load()
+
     this.root=WelcomePage
     this.initializeApp()
     this.config.vw = platform.width()
@@ -58,7 +54,6 @@ export class AppComponent {
   }
 	gotoPage(page){
 		if(page.name==='DetailsPage'){
-      // return this.nav.push(page.component,{code:page.code})
       return this.router.navigate([])
     }
     this.router.navigate([page.url, page.params || {}])

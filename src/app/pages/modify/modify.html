@@ -12,13 +12,16 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="home">
-  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" side="start">
-    <ion-item inset *ngFor="let stock of stocks" (click)="gotoDetail(stock)">
-      <ion-label>{{stock.code.slice(2)}}</ion-label>
-      <ion-label>{{stock.name}}</ion-label>
-      <button ion-button color="danger" outline item-end (click)="onRemove(stock,$event)">
-        <ion-icon name="trash"></ion-icon>
-      </button>
-    </ion-item>
+  <ion-list>
+    <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
+      <ion-item inset *ngFor="let stock of stocks" (click)="gotoDetails(stock.code)">
+        <ion-reorder slot="start"></ion-reorder>
+        <ion-label>{{stock.code.slice(2)}}</ion-label>
+        <ion-label>{{stock.name}}</ion-label>
+        <button ion-button color="danger" outline item-end (click)="onRemove(stock,$event)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item>
+    </ion-reorder-group>
   </ion-list>
 </ion-content>

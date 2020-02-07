@@ -1,10 +1,7 @@
 import { Component, ViewChild, ElementRef, OnChanges, Input, ViewEncapsulation } from '@angular/core'
 import {Config} from '../../providers/config'
 import {StockService,isOpening} from '../../providers/stock'
-// import { Subscription } from 'rxjs/Subscription'
-// import { timer } from 'rxjs/observable/timer'
-// import { Observable } from 'rxjs/Observable';
-import {Subscription, timer, Observable, from} from 'rxjs'
+import {Subscription, timer, from} from 'rxjs'
 import { switchMap, filter, retry } from 'rxjs/operators'
 import * as d3 from 'd3-selection'
 import * as d3Scale from "d3-scale"
