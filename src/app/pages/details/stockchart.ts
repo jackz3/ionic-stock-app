@@ -306,7 +306,7 @@ export class StockCharts implements OnChanges {
 					.attr('x2',this.width)
 					.attr('y2',this.priceHeight/2)
 		this.g.append('text')
-					.attr('class','mid-tick time-axis')
+					.attr('class','tick time-axis')
 					.attr('x',this.width/2)
 					.attr('y',this.priceHeight+6)
 					.attr('text-anchor','middle')

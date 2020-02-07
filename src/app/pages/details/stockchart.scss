@@ -1,6 +1,8 @@
 .chart-wrapper{
   background-color: #fff;
-  
+	.tick {
+		font-size: 0.9rem;
+	}
   .mins-line{
     stroke:darkblue;
   }
@@ -18,10 +20,10 @@
 	font-size: 1.1rem;
 }
 .time-axis{
-	font-size: 1.5rem;
+	font-size: 1.1rem;
 }
 .active-tick{
-	// font-size: 0.9rem;
+	font-size: 0.9rem;
 	stroke: white;
 	fill: white;
 }
