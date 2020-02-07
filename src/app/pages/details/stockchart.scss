@@ -12,15 +12,16 @@
 	fill:none;
 }
 .price-axis{
-	font-size: 1.3rem;
+	font-size: 1.1rem;
 }
 .price-pct-axis{
-	font-size: 1.3rem;
+	font-size: 1.1rem;
 }
 .time-axis{
-	font-size: 1.6rem;
+	font-size: 1.5rem;
 }
 .active-tick{
+	// font-size: 0.9rem;
 	stroke: white;
 	fill: white;
 }
@@ -50,7 +51,7 @@
 }
 
 .ma-legend {
-	font-size: 1.8rem;
+	font-size: 1.0rem;
 	font-weight: bold;
 	text-anchor: middle;
 }

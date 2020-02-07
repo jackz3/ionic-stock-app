@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http'
-import * as moment from 'moment'
+import { set, parse } from 'date-fns'
+// import * as moment from 'moment'
 import {Observable, from} from 'rxjs'
 // import {fromPromise} from 'rxjs/observable/fromPromise'
 
@@ -46,11 +47,11 @@ function procStock(stock) {
 }
 
 export function	isOpening(){
-    const d=new Date(),day=d.getDay();
-    if(day>0 && day<6){
-      let start=moment({hour: 9, minute: 15}),
-          end=moment({hour:15,minutes:15}),
-          now = moment();
+    const now=new Date()
+    const day=now.getDay()
+    if (day>0 && day<6) {
+      const start = set(now, {hours: 9, minutes: 15, seconds: 0})
+      const end = set(now, {hours: 15, minutes: 15, seconds: 0})
       if(now>start && now<end){
         return true;
       }
@@ -62,18 +63,6 @@ export function	isOpening(){
 export class StockService {
 	_data:Object={}
   constructor(private http: HttpClient) {
-  }
-	isOpening(){
-    const d=new Date(),day=d.getDay();
-    if(day>0 && day<6){
-      let start=moment({hour: 9, minute: 15}),
-          end=moment({hour:15,minutes:15}),
-          now = moment();
-      if(now>start && now<end){
-        return true;
-      }
-    }
-    return false;
   }
 	getData(){
 		return this._data;
@@ -158,7 +147,7 @@ export class StockService {
               sell3:values[23],sell3Vol:values[24],
               sell4:values[25],sell4Vol:values[26],
               sell5:values[27],sell5Vol:values[28],
-              time:moment(values[30],'YYYYMMDDHHmmss').toDate(),
+              time: parse(values[30], 'yyyyMMddHHmmss', new Date()),
 							high:values[33],low:values[34],
               amount:parseInt(values[37]),
               turnoverRate:values[38],
@@ -261,7 +250,7 @@ export class StockService {
           t.forEach((v)=>{
             let key=v.split(':');
             if(key[0]==='start'){
-              info.start=moment(key[1],'YYMMDD').toDate();
+              info.start= parse(key[1], 'yyMMdd', new Date())
             }else{
               info[key[0]]=parseInt(key[1]);
             }
@@ -271,7 +260,7 @@ export class StockService {
             for(var i=0;i<info.num;i++){
               t=origin[i].split(' ');
               kdata[i]={
-                date:moment(t[0],'YYMMDD').toDate(),
+                date: parse(t[0], 'yyMMdd', new Date()),
                 open:parseFloat(t[1]),
                 close:parseFloat(t[2]),
                 high:parseFloat(t[3]),
@@ -300,7 +289,7 @@ export class StockService {
         for(var i=0;i<len;i++){
           let t=origin[i].split(' ');
           kdata[i]={
-            date:moment(t[0],'YYMMDD').toDate(),
+            date: parse(t[0], 'yyMMdd', new Date()),
             open:parseFloat(t[1]),
             close:parseFloat(t[2]),
             high:parseFloat(t[3]),
@@ -326,7 +315,7 @@ export class StockService {
         for(var i=0;i<len;i++){
           let t=origin[i].split(' ');
           kdata[i]={
-            date:moment(t[0],'YYMMDD').toDate(),
+            date: parse(t[0], 'yyMMdd', new Date()),
             open:parseFloat(t[1]),
             close:parseFloat(t[2]),
             high:parseFloat(t[3]),
