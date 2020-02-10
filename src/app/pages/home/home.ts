@@ -40,8 +40,7 @@ export class HomePage {
 		this.loading = await this.loadingCtrl.create({
 			message: '载入中...'
 		})
-		await this.loading.present()
-		let firstLoad=true
+		this.loading.present()
 
 		if(this.type==='favors'){
 			this.subscription = merge(
@@ -58,10 +57,8 @@ export class HomePage {
 											.then(()=>this.stockService.getStocks(this.codes))
 			), retry())
 			.subscribe(stocks=>{
-				debugger
-				if(firstLoad){
-					firstLoad=false
-					this.loading.dismiss().catch()
+				if (this.loading.parentElement) {
+					this.loading.dismiss()
 				}
 				this.stocks=stocks
 			})
@@ -73,9 +70,8 @@ export class HomePage {
 				return isOpening()
 			}), switchMap(x=>this.stockService.fetchRankings(this.segment)), retry())
 				.subscribe(x=>{
-					if(firstLoad){
-						firstLoad=false
-						this.loading.dismiss().catch()
+					if (this.loading.parentElement) {
+						this.loading.dismiss()
 					}
 					this.stocks=x})
 		}

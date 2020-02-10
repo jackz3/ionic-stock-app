@@ -7,7 +7,6 @@ import {Config} from '../../providers/config'
 import {SearchPage} from '../search/search';
 import { Subscription, timer } from 'rxjs';
 import { switchMap, filter, retry } from 'rxjs/operators'
-// import { Loading } from 'ionic-angular/components/loading/loading'
 
 @Component({
   templateUrl: 'details.html',
@@ -70,7 +69,9 @@ export class DetailsPage {
 						switchMap(x=>this.stockService
 														.fetchDay([this.code])
 														.then(()=> {
-															this.loading.dismiss().catch()
+															if (this.loading.parentElement) {
+																this.loading.dismiss()
+															}
 															return this.stockService.getStock(this.code)
 														})
 						),
