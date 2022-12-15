@@ -17,7 +17,7 @@ import * as d3TimeFomat from 'd3-time-format'
 	encapsulation: ViewEncapsulation.ShadowDom
 })
 export class StockCharts implements OnChanges {
-	@ViewChild('stockChart', {static: false}) chartRef: ElementRef
+	@ViewChild('stockChart') chartRef: ElementRef
   @Input() private price: number
   @Input() private code: string
   @Input() private volume: number

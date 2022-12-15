@@ -32,7 +32,7 @@ export class SearchPage {
 	dismiss(){
 		this.viewCtrl.dismiss()
 	}
-	clear(e){
+	clear(){
 		this.q=''
 	}
 	gotoDetails(stock){
